@@ -1,0 +1,11 @@
+extends layout.pug
+
+block content
+  include partials/header-main.pug
+  main.articles-category
+    h1 Бизнес
+    section.articles-category__theme-list
+      h2.visually-hidden Список тем
+
+      include articles/categories.pug
+    include articles/articles-list.pug
