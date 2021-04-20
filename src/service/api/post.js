@@ -6,9 +6,8 @@ const postValidator = require(`../middle-wares/post-validator`);
 const postExist = require(`../middle-wares/post-exists`);
 const commentValidator = require(`../middle-wares/comment-validator`);
 
-const route = new Router();
-
 module.exports = (app, postService, commentService) => {
+  const route = new Router();
   app.use(`/articles`, route);
 
   route.get(`/`, (req, res) => {

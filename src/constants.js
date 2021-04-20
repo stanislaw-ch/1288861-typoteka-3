@@ -20,6 +20,10 @@ const MAX_ID_LENGTH = 6;
 const MAX_COMMENTS = 4;
 
 const API_PREFIX = `/api`;
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
 
 module.exports = {
   DEFAULT_COMMAND,
@@ -29,4 +33,5 @@ module.exports = {
   MAX_ID_LENGTH,
   MAX_COMMENTS,
   API_PREFIX,
+  Env,
 };
