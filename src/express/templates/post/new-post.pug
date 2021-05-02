@@ -5,7 +5,7 @@ block content
   section
     .popup.popup--new-publication.popup--anti
       .new-publication
-        form(action='#' method='POST')
+        form(action='/articles/add' method='POST' enctype="multipart/form-data")
           .new-publication__header
             h1 Новая публикация
             .new-publication__date-form
@@ -31,7 +31,7 @@ block content
                     input.visually-hidden(type='file' name='upload')
                     | Обзор
               .new-publication__category-wrapper
-                a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+                a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
             .form__wrapper.form__wrapper--text
               .form__field.form__field--publication-text
                 label

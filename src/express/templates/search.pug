@@ -6,7 +6,12 @@ block content
       .search-page__wrapper
         h1 Поиск
         .search.search-page__form
-          form(action='#' method='get')
+          form(action='' method='get')
             label
               input(type='text' name='search' placeholder='Что ищем?')
             button.search__button.button.button--transparent(type='submit') Найти
+        if results
+          if results.length
+            include search/result.pug
+          else
+            include search/empty.pug

@@ -22,7 +22,7 @@ block content
             .form__wrapper.form__wrapper--intro
               .form__field
                 label
-                  input(type='text' name='title' placeholder='Заголовок' value='Как правильно заводить машину' required='')
+                  input(type='text' name='title' placeholder='Заголовок' value=post.title required='')
               .form__field.form__field--post-image
                 label
                   input#image-name-field(type='text' name='photo' value='moya_mashinka.jpg' placeholder='Фотография' readonly='')
@@ -40,9 +40,8 @@ block content
               .form__field.form__field--publication-text
                 label
                   textarea(rows='5' name='announcement' placeholder='Анонс публикации')
-                    | Материнский холдинг возглавит гендиректор Google Сундар Пичаи. При этом больше половины голосов в компании останется у Пейджа и Брина.
+                    | #{post.announce}
               .form__field.form__field--publication-text
                 label
                   textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
-                    | Основатели Google Ларри Пейдж и Сергей Брин отойдут от руководства материнским холдингом Alphabet, сказано в сообщении компании. Пейдж занимал пост гендиректора, а Брин — президента Alphabet.
-                    | Alphabet возглавит гендиректор Google Сундар Пичаи, он также продолжит руководить Google. Должность президента холдинга будет упразднена.
+                    | #{post.fullText}
