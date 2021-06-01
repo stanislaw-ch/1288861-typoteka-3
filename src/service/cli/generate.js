@@ -57,10 +57,10 @@ module.exports = {
     const comments = await readContent(FILE_COMMENTS_PATH);
 
     const [count] = args;
-    const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences, comments));
+    const countPost = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    const content = JSON.stringify(generateOffers(countPost, titles, categories, sentences, comments));
 
-    if (countOffer > PublicationCount.MAX) {
+    if (countPost > PublicationCount.MAX) {
       console.log(chalk.red(`Не больше 1000 публикаций`));
       return;
     }
