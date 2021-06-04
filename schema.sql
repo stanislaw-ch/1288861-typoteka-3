@@ -15,10 +15,11 @@ CREATE TABLE users(
 CREATE TABLE posts(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   title varchar(255) NOT NULL,
-  description text NOT NULL,
+  announce text NOT NULL,
+  fullText text NOT NULL,
   picture varchar(50),
   user_id integer NOT NULL,
-  created_at timestamp DEFAULT current_timestamp,
+  created_at varchar(255) NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

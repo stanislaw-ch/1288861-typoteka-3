@@ -123,7 +123,7 @@ ${userValues};
 INSERT INTO categories(name) VALUES
 ${categoryValues};
 ALTER TABLE posts DISABLE TRIGGER ALL;
-INSERT INTO posts(title, createdDate, announce, fullText, user_id) VALUES
+INSERT INTO posts(title, created_at, announce, fullText, user_id) VALUES
 ${postValues};
 ALTER TABLE posts ENABLE TRIGGER ALL;
 ALTER TABLE post_categories DISABLE TRIGGER ALL;

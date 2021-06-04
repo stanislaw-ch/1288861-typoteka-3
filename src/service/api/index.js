@@ -19,9 +19,13 @@ const app = new Router();
 (async () => {
   const mockData = await getMockData();
 
-  category(app, new CategoryService(mockData));
-  search(app, new SearchService(mockData));
-  post(app, new PostService(mockData), new CommentService());
+  const getRoutes = function () {
+    category(app, new CategoryService(mockData));
+    search(app, new SearchService(mockData));
+    post(app, new PostService(mockData), new CommentService());
+  };
+
+  getRoutes();
 })();
 
 module.exports = app;
