@@ -1,36 +1,32 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
-
 class CommentService {
-  create(post, comment) {
-    const newComment = Object.assign({
-      id: nanoid(MAX_ID_LENGTH),
-    }, comment);
-
-    post.comments.push(newComment);
-    return comment;
+  constructor(sequelize) {
+    // this._Post = sequelize.models.Post;
+    this._Comment = sequelize.models.Comment;
   }
 
-  drop(post, commentId) {
-    const dropComment = post.comments
-      .find((item) => item.id === commentId);
-
-    if (!dropComment) {
-      return null;
-    }
-
-    post.comments = post.comments
-      .filter((item) => item.id !== commentId);
-
-    return dropComment;
+  create(postId, comment) {
+    return this._Comment.create({
+      postId,
+      ...comment
+    });
   }
 
-  findAll(post) {
-    return post.comments;
+  async drop(id) {
+    const deletedRows = await this._Comment.destroy({
+      where: {id}
+    });
+
+    return !!deletedRows;
   }
 
+  findAll(postId) {
+    return this._Comment.findAll({
+      where: {postId},
+      raw: true
+    });
+  }
 }
 
 module.exports = CommentService;

@@ -20,16 +20,16 @@ module.exports.getRandomDate = () => {
 
   const endPoint = startPoint - new Date(90 * (24 * 3600 * 1000)).getTime();
 
-  const options = {
-    day: `numeric`,
-    month: `numeric`,
-    year: `numeric`,
-    hour: `numeric`,
-    minute: `numeric`,
-    second: `numeric`
-  };
+  // const options = {
+  //   day: `numeric`,
+  //   month: `numeric`,
+  //   year: `numeric`,
+  //   hour: `numeric`,
+  //   minute: `numeric`,
+  //   second: `numeric`
+  // };
 
-  const date = new Date(endPoint + Math.random() * (startPoint - endPoint)).toLocaleDateString(`ru-RU`, options);
+  const date = new Date(endPoint + Math.random() * (startPoint - endPoint));
 
   return date;
 };

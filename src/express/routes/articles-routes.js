@@ -29,13 +29,13 @@ articlesRouter.get(`/add`, async (req, res) => {
   res.render(`post/new-post`, {categories});
 });
 
-articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
+articlesRouter.post(`/add`, upload.single(`avatar`), async (req, res) => {
   const {body, file} = req;
   const postData = {
     createdDate: body.date,
     title: body.title,
     picture: file.filename,
-    category: `body.category_1`,
+    categories: body.category,
     announce: body.announcement,
     description: body[`full-text`],
   };
@@ -56,6 +56,11 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   res.render(`post/edit-post`, {post, categories});
 });
 
-articlesRouter.get(`/:id`, (req, res) => res.render(`post`));
+articlesRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+  const post = await api.getPost(id, true);
+  console.log(post);
+  res.render(`post`, {post});
+});
 
 module.exports = articlesRouter;

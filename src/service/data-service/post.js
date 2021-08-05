@@ -1,45 +1,59 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
+const Aliases = require(`../models/aliases`);
 
 class PostService {
-  constructor(posts) {
-    this._posts = posts;
+  constructor(sequelize) {
+    this._Post = sequelize.models.Post;
+    this._Comment = sequelize.models.Comment;
+    this._Category = sequelize.models.Category;
   }
 
-  create(post) {
-    const newPost = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, post);
-
-    this._posts.push(newPost);
-    return newPost;
+  async create(postData) {
+    const post = await this._Post.create(postData);
+    await post.addCategories(postData.categories);
+    return post.get();
   }
 
-  drop(id) {
-    const post = this._posts.find((item) => item.id === id);
+  async drop(id) {
+    const deletedRows = await this._Post.destroy({
+      where: {id}
+    });
+    return !!deletedRows;
+  }
 
-    if (!post) {
-      return null;
+  async findAll(needComments) {
+    const include = [Aliases.CATEGORIES];
+    if (needComments) {
+      include.push(Aliases.COMMENTS);
     }
-
-    this._posts = this._posts.filter((item) => item.id !== id);
-    return post;
+    const posts = await this._Post.findAll({include});
+    return posts.map((item) => item.get());
   }
 
-  findAll() {
-    return this._posts;
+  findOne(id, needComments) {
+    const include = [Aliases.CATEGORIES];
+    if (needComments) {
+      include.push(Aliases.COMMENTS);
+    }
+    return this._Post.findByPk(id, {include});
   }
 
-  findOne(id) {
-    return this._posts.find((item) => item.id === id);
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Post.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliases.CATEGORIES],
+      distinct: true
+    });
+    return {count, posts: rows};
   }
 
-  update(id, post) {
-    const oldPost = this._posts
-      .find((item) => item.id === id);
-
-    return Object.assign(oldPost, post);
+  async update(id, post) {
+    const [affectedRows] = await this._Post.update(post, {
+      where: {id}
+    });
+    return !!affectedRows;
   }
 
 }
