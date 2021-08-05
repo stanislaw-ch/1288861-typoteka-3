@@ -2,7 +2,7 @@
 
 class CommentService {
   constructor(sequelize) {
-    // this._Post = sequelize.models.Post;
+    this._Post = sequelize.models.Post;
     this._Comment = sequelize.models.Comment;
   }
 
