@@ -4,11 +4,11 @@
       | Самое обсуждаемое&#32;
       span.hot__icon.hot__icon--fire
     ul.hot__list
-      each postsTrend in postsTrends
+      each postInTrend in postInTrends
         li.hot__list-item
           a.hot__list-link(href='#')
-            | #{postsTrend.announce}
-            sup.hot__link-sup #{postsTrend.comments.length}
+            | #{postInTrend.announce}
+            sup.hot__link-sup
   section.main-page__last.last
     h2.last__name
       | Последние комментарии&#32;

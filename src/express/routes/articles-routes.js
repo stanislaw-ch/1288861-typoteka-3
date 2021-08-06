@@ -59,7 +59,6 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
   const post = await api.getPost(id, true);
-  console.log(post);
   res.render(`post`, {post});
 });
 

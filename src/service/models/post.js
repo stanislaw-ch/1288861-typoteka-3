@@ -6,7 +6,7 @@ class Post extends Model {}
 
 const define = (sequelize) => Post.init({
   announce: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false
   },
   picture: DataTypes.STRING,
@@ -15,7 +15,7 @@ const define = (sequelize) => Post.init({
     allowNull: false
   },
   fullText: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false
   },
   createdDate: {

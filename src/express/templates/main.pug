@@ -11,4 +11,4 @@ block content
       include articles/categories.pug
     include articles/in-trend.pug
     include articles/articles-list.pug
-    include articles/pagination.pug
+    +pagination(page, totalPages, 2, `?`)

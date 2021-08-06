@@ -9,11 +9,11 @@ section.main-page__list.preview
               a.preview__breadcrumbs-link(href='/categories') #{category.name}
         .preview__background
           img.preview__background-image(src='/img/skyscraper@1x.jpg' width='460' height='240' srcset='/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x' alt='Фотография небоскреба')
-        time.preview__time(datetime='2019-03-21T20:33') #{post.createdDate}
+        time.preview__time(datetime=`${post.createdDate}`) #{formatDate(post.createdDate)}
         h3.preview__name
           a.preview__name-link(href='/articles/category') #{post.title}
         p.preview__text #{post.announce}
         a.preview__comment(href='/my/comments')
           | Комментарии
           span.preview__cloud
-          b.preview__comment-count !{' '}#{post.comments.length}
+          b.preview__comment-count !{' '}
