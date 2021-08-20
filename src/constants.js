@@ -35,3 +35,10 @@ module.exports = {
   API_PREFIX,
   Env,
 };
+
+module.exports.HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};

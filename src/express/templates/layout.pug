@@ -13,6 +13,13 @@ head
     a.active{
       pointer-events: none;
     }
+    .server-error{
+      border-radius: 10px;
+      color: white;
+      background-color: tomato;
+      margin: 20px 0;
+      padding: 10px;
+    }
 
 body
   -
@@ -27,6 +34,7 @@ body
       };
       return date.toLocaleString(`ru-RU`, options);
     }
+
   mixin pagination(page, totalPages, width, prefix)
     -
       let start = page - width;
@@ -53,6 +61,11 @@ body
             a(href=`${prefix}page=${i}`)= i
         li
           a.pagination__button.button.button--forward(class={'button--disabled': page === end} href=`${prefix}page=${page + 1}`) Вперёд
+
+  mixin errorCommentMessage(message)
+    if message
+      p.comments__error= message
+
   .wrapper
     block content
     include partials/footer.pug

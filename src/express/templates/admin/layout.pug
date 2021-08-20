@@ -10,6 +10,27 @@ head
   link(rel='preload' href='./fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
   link(rel='stylesheet' href='/css/style.min.css')
 body
+  mixin errorCommentMessage(message)
+    if message
+      p.comments__error= message
+
+  mixin errorMessage(message)
+    if message
+      p.form__error-message= message
+
+  mixin errorRegMessage(message)
+    if message
+      .form__validation-error
+        p.form__error-message При регистрации произошли ошибки:
+        ul.form__errors
+          li.form__error= message
+
+  mixin errorAddNewPostMessage(messages)
+    if messages
+      .form__validation-error
+        p.form__error-message При публикации произошли ошибки:
+          ul.form__errors
+            li.form__error= messages
   .wrapper-color
     include ../partials/header-admin.pug
     block content

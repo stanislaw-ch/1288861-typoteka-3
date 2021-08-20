@@ -33,3 +33,5 @@ module.exports.getRandomDate = () => {
 
   return date;
 };
+
+module.exports.ensureArray = (value) => Array.isArray(value) ? value : [value];

@@ -23,6 +23,7 @@ block content
               .form__field
                 label
                   input(type='text' name='title' placeholder='Заголовок' required='')
+                  +errorMessage(error)
               .form__field.form__field--post-image
                 label
                   input#image-name-field(type='text' name='photo' placeholder='Фотография' readonly='')
@@ -31,6 +32,10 @@ block content
                     input.visually-hidden(type='file' name='upload')
                     | Обзор
               .new-publication__category-wrapper
+                each category in categories
+                  .new-publication__checkbox(class=`new-publication__checkbox--${category.id}`)
+                    input(type="checkbox" name=`category-${category.id}` id=`checkbox-${category.id}`)
+                    label(for=`checkbox-${category.id}`) #{category.name}
                 a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
             .form__wrapper.form__wrapper--text
               .form__field.form__field--publication-text
@@ -39,3 +44,4 @@ block content
               .form__field.form__field--publication-text
                 label
                   textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
+        +errorAddNewPostMessage(error)
