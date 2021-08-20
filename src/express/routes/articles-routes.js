@@ -39,7 +39,7 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     picture: file ? file.filename : ``,
     categories: ensureArray(body.category),
     announce: body.announcement,
-    description: body[`full-text`],
+    fullText: body[`full-text`],
   };
   try {
     await api.createPost(postData);
@@ -68,7 +68,7 @@ articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
     picture: file ? file.filename : body[`old-image`],
     categories: ensureArray(body.category),
     announce: body.announcement,
-    description: body[`full-text`],
+    fullText: body[`full-text`],
   };
 
   try {
