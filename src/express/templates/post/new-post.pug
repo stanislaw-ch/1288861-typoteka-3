@@ -34,7 +34,7 @@ block content
               .new-publication__category-wrapper
                 each category in categories
                   .new-publication__checkbox(class=`new-publication__checkbox--${category.id}`)
-                    input(type="checkbox" name=`category-${category.id}` id=`checkbox-${category.id}`)
+                    input(type="checkbox" name="category" id=`checkbox-${category.id}` value=category.id)
                     label(for=`checkbox-${category.id}`) #{category.name}
                 a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
             .form__wrapper.form__wrapper--text

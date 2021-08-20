@@ -28,7 +28,6 @@ articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-catego
 articlesRouter.get(`/add`, async (req, res) => {
   const {error} = req.query;
   const categories = await api.getCategories();
-
   res.render(`post/new-post`, {categories, error});
 });
 
@@ -38,7 +37,7 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     createdDate: body.date,
     title: body.title,
     picture: file ? file.filename : ``,
-    categories: body.category,
+    categories: ensureArray(body.category),
     announce: body.announcement,
     description: body[`full-text`],
   };
@@ -69,7 +68,7 @@ articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
     picture: file ? file.filename : body[`old-image`],
     categories: ensureArray(body.category),
     announce: body.announcement,
-    description: body.comment,
+    description: body[`full-text`],
   };
 
   try {
