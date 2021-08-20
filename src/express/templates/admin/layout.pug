@@ -27,10 +27,19 @@ body
 
   mixin errorAddNewPostMessage(messages)
     if messages
-      .form__validation-error
-        p.form__error-message При публикации произошли ошибки:
-            ul.form__errors
-              li.form__error= messages
+      - let foo = messages.split(`\n`)
+        .form__validation-error
+          p.form__error-message При публикации произошли ошибки:
+            each message in foo
+              ul.form__errors
+                li.form__error= message
+
+  mixin inputMessages(messages)
+    if (error)
+      - let errorArr = error.split(`\n`)
+        each elem in errorArr
+          - if (elem.includes(messages))
+            p.form__error-message= elem
   .wrapper-color
     include ../partials/header-admin.pug
     block content

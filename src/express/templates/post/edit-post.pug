@@ -23,26 +23,32 @@ block content
               .form__field
                 label
                   input(type='text' name='title' placeholder='Заголовок' value=post.title required='')
+                  +inputMessages('Заголовок')
               .form__field.form__field--post-image
                 label
                   input#image-name-field(type='text' name='photo' value='moya_mashinka.jpg' placeholder='Фотография' readonly='')
+                  +inputMessages('Фотография')
                 .form__image-loader.form__image-loader--publication
                   label
                     input.visually-hidden(type='file' name='upload')
                     | Обзор
                 button.button.button--transparent Удалить
               .new-publication__category-wrapper
-                .new-publication__checkbox.new-publication__checkbox--auto
-                  input#checkbox-auto(type='checkbox' name='category-1')
-                  label(for='checkbox-auto') Автомобили
+                each category in categories
+                  .new-publication__checkbox(class=`new-publication__checkbox--${category.id}`)
+                    input(type="checkbox" name="category" id=`checkbox-${category.id}` value=category.id)
+                    label(for=`checkbox-${category.id}`) #{category.name}
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
             .form__wrapper.form__wrapper--text
+              +inputMessages('Категории')
               .form__field.form__field--publication-text
                 label
                   textarea(rows='5' name='announcement' placeholder='Анонс публикации')
                     | #{post.announce}
+                  +inputMessages('Анонс публикации')
               .form__field.form__field--publication-text
                 label
                   textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
                     | #{post.fullText}
+                  +inputMessages('Полный текст публикации')
           +errorAddNewPostMessage(error)

@@ -4,20 +4,32 @@ const Joi = require(`joi`).extend(require(`@joi/date`));
 const {HttpCode} = require(`../../constants`);
 
 const schema = Joi.object({
+  createdDate: Joi.date().format(`YYYY-MM-DD`).required(),
   title: Joi.string().min(30).max(250).required().messages({
     'string.empty': `"Заголовок" - не может быть пустым`,
     'string.min': `"Заголовок" - должен содержать минимум 30 символов`,
     'string.max': `"Заголовок" - должен содержать максимум 250 символов`,
     'any.required': `"Заголовок" - обязателен для заполнения`
   }),
-  createdDate: Joi.date().format(`DD-MM-YYYY`).required(),
-  // createdDate: Joi.date().iso().required(),
+  picture: Joi.string().messages({
+    'string.empty': `"Фотография" - пока не знаю как убрать вывод этой ошибки...`,
+  }),
   categories: Joi.array().items(
       Joi.number().integer().positive()
-  ).min(1).required(),
-  announce: Joi.string().min(30).max(250).required(),
-  picture: Joi.string(),
-  fullText: Joi.string().min(30).max(1000),
+  ).min(1).required().messages({
+    'number.base': `"Категории" - выберите не менее одной категории`,
+  }),
+  announce: Joi.string().min(30).max(250).required().messages({
+    'string.empty': `"Анонс публикации" - не может быть пустым`,
+    'string.min': `"Анонс публикации" - должен содержать минимум 30 символов`,
+    'string.max': `"Анонс публикации" - должен содержать максимум 250 символов`,
+    'any.required': `"Анонс публикации" - обязателен для заполнения`
+  }),
+  fullText: Joi.string().min(30).max(1000).messages({
+    'string.empty': `"Полный текст публикации" - пока не знаю как убрать вывод этой ошибки...`,
+    'string.min': `"Полный текст публикации" - должен содержать минимум 30 символов`,
+    'string.max': `"Полный текст публикации" - должен содержать максимум 1000 символов`,
+  }),
 });
 
 module.exports = (req, res, next) => {
