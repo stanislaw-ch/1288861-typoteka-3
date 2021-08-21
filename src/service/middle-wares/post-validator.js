@@ -11,9 +11,7 @@ const schema = Joi.object({
     'string.max': `"Заголовок" - должен содержать максимум 250 символов`,
     'any.required': `"Заголовок" - обязателен для заполнения`
   }),
-  picture: Joi.string().messages({
-    'string.empty': `"Фотография" - пока не знаю как убрать вывод этой ошибки...`,
-  }),
+  picture: Joi.string().allow(null, ``),
   categories: Joi.array().items(
       Joi.number().integer().positive()
   ).min(1).required().messages({
@@ -25,8 +23,7 @@ const schema = Joi.object({
     'string.max': `"Анонс публикации" - должен содержать максимум 250 символов`,
     'any.required': `"Анонс публикации" - обязателен для заполнения`
   }),
-  fullText: Joi.string().min(30).max(1000).messages({
-    'string.empty': `"Полный текст публикации" - пока не знаю как убрать вывод этой ошибки...`,
+  fullText: Joi.string().min(30).max(1000).allow(null, ``).messages({
     'string.min': `"Полный текст публикации" - должен содержать минимум 30 символов`,
     'string.max': `"Полный текст публикации" - должен содержать максимум 1000 символов`,
   }),
