@@ -3,11 +3,11 @@ each comment in post.comments
   ul.comments__list
     li.comments__comment
       .comments__avatar.avatar
-        img(src='/img/avatar-1.png' alt='аватар пользователя')
+        img(src=`/img/${comment.users.avatar}` alt='аватар пользователя')
       .comments__text
         .comments__head
-          p Евгений Петров •
-          time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt)}
+          p #{comment.users.firstName} #{comment.users.lastName} •
+          time.comments__date(datetime=`${comment.createdAt}`) #{formatDate(comment.createdAt)}
         p.comments__message #{comment.text}
 .comments__footer.comments__footer--user
   form(action=`/articles/${id}/comments` enctype='application/x-www-form-urlencoded' method='POST')
@@ -17,4 +17,3 @@ each comment in post.comments
       textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
     button.comments__button.button.button--colored(type='submit') Опубликовать
     +errorCommentMessage(error)
-  //- include ../post/error.pug

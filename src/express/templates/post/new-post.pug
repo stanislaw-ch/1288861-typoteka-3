@@ -48,4 +48,8 @@ block content
                 label
                   textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
                   +inputMessages('Полный текст публикации')
-        +errorAddNewPostMessage(error)
+        if error
+          - let errorArr = error.split(`\n`)
+          .form__validation-error
+            p.form__error-message При публикации произошли ошибки:
+            +errorMessages(errorArr)

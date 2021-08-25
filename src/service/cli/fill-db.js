@@ -5,6 +5,7 @@ const {MAX_COMMENTS} = require(`../../constants`);
 const {getRandomInt, getRandomDate, shuffle} = require(`../../utils`);
 
 const getSequelize = require(`../lib/sequelize`);
+const passwordUtils = require(`../lib/password`);
 const initDatabase = require(`../lib/init-db`);
 
 const {getLogger} = require(`../lib/logger`);
@@ -16,13 +17,19 @@ const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
-// const PublicationCount = {
-//   MIN: 1,
-//   MAX: 1000,
-// };
+const pictureNames = [`sea-fullsize`, ``];
 
-const generateComments = (count, comments) => (
+const getPictureFileName = () => {
+  const index = pictureNames[getRandomInt(0, pictureNames.length - 1)];
+  if (index === ``) {
+    return null;
+  }
+  return `${index}@1x.jpg`;
+};
+
+const generateComments = (count, comments, users) => (
   Array(count).fill({}).map(() => ({
+    user: users[getRandomInt(0, users.length - 1)].email,
     text: shuffle(comments)
       .slice(0, getRandomInt(1, 3))
       .join(` `),
@@ -31,7 +38,7 @@ const generateComments = (count, comments) => (
 
 const getRandomSubarray = (items) => {
   items = items.slice();
-  let count = getRandomInt(1, items.length - 1);
+  let count = getRandomInt(1, items.length - 4);
   const result = [];
   while (count--) {
     result.push(
@@ -53,14 +60,16 @@ const readContent = async (filePath) => {
   }
 };
 
-const generatePosts = (count, titles, categories, sentences, comments) => (
+const generatePosts = (count, titles, categories, sentences, comments, users) => (
   Array(count).fill({}).map(() => ({
+    user: users[getRandomInt(0, users.length - 1)].email,
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(),
     announce: shuffle(sentences).slice(1, 5).join(` `),
     fullText: shuffle(sentences).slice(1, sentences.length).join(` `),
     categories: getRandomSubarray(categories),
-    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments, users),
+    picture: getPictureFileName(),
   }))
 );
 
@@ -80,11 +89,27 @@ module.exports = {
     const titles = await readContent(FILE_TITLES_PATH);
     const categories = await readContent(FILE_CATEGORIES_PATH);
     const comments = await readContent(FILE_COMMENTS_PATH);
+    const users = [
+      {
+        firstName: `Иван`,
+        lastName: `Иванов`,
+        email: `ivanov@example.com`,
+        passwordHash: await passwordUtils.hash(`ivanov`),
+        avatar: `avatar-1.png`
+      },
+      {
+        firstName: `Пётр`,
+        lastName: `Петров`,
+        email: `petrov@example.com`,
+        passwordHash: await passwordUtils.hash(`petrov`),
+        avatar: `avatar-2.png`
+      }
+    ];
 
     const [count] = args;
     const countPost = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const posts = generatePosts(countPost, titles, categories, sentences, comments);
+    const posts = generatePosts(countPost, titles, categories, sentences, comments, users);
 
-    return initDatabase(getSequelize(), {posts, categories});
+    return initDatabase(getSequelize(), {posts, categories, users});
   }
 };

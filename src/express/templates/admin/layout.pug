@@ -10,6 +10,19 @@ head
   link(rel='preload' href='./fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
   link(rel='stylesheet' href='/css/style.min.css')
 body
+  -
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const options = {
+        day: `numeric`,
+        month: `numeric`,
+        year: `numeric`,
+        hour: `numeric`,
+        minute: `numeric`,
+      };
+      return date.toLocaleString(`ru-RU`, options);
+    }
+
   mixin errorCommentMessage(message)
     if message
       p.comments__error= message
@@ -25,14 +38,10 @@ body
         ul.form__errors
           li.form__error= message
 
-  mixin errorAddNewPostMessage(messages)
-    if messages
-      - let errorArr = messages.split(`\n`)
-        .form__validation-error
-          p.form__error-message При публикации произошли ошибки:
-            each message in errorArr
-              ul.form__errors
-                li.form__error= message
+  mixin errorMessages(messages)
+    each message in messages
+      ul.form__errors
+        li.form__error= message
 
   mixin inputMessages(messages)
     if (error)

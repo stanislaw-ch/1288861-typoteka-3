@@ -66,6 +66,11 @@ body
     if message
       p.comments__error= message
 
+  mixin errorMessages(messages)
+    each message in messages
+      ul.form__errors
+        li.form__error= message
+
   .wrapper
     block content
     include partials/footer.pug

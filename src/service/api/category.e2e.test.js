@@ -5,6 +5,7 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const initDB = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 const category = require(`./category`);
 const DataService = require(`../data-service/category`);
 
@@ -22,9 +23,27 @@ const mockCategories = [
   `Программирование`,
 ];
 
+const mockUsers = [
+  {
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    email: `ivanov@example.com`,
+    passwordHash: passwordUtils.hashSync(`ivanov`),
+    avatar: `avatar-1.jpg`
+  },
+  {
+    firstName: `Пётр`,
+    lastName: `Петров`,
+    email: `petrov@example.com`,
+    passwordHash: passwordUtils.hashSync(`petrov`),
+    avatar: `avatar-2.jpg`
+  }
+];
+
 const mockPosts = [
   /* eslint-disable */
   {
+    "user": `ivanov@example.com`,
     "title": "Обзор новейшего смартфона.",
     "createdDate": "11.02.2021, 08:37:49",
     "announce": "Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Золотое сечение — соотношение двух величин, гармоническая пропорция. Он написал больше 30 хитов. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много.",
@@ -40,20 +59,24 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `petrov@example.com`,
         "text": "Плюсую, но слишком много буквы! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Хочу такую же футболку :-)"
       },
       {
         "text": "Это где ж такие красоты? Планируете записать видосик на эту тему? Совсем немного..."
       },
       {
+        "user": `ivanov@example.com`,
         "text": "Согласен с автором!"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Совсем немного... Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты?"
       }
     ]
   },
   {
+    "user": `petrov@example.com`,
     "title": "Как собрать камни бесконечности.",
     "createdDate": "22.03.2021, 07:58:44",
     "announce": "Как начать действовать? Для начала просто соберитесь. Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Достичь успеха помогут ежедневные повторения. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем.",
@@ -64,14 +87,17 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `ivanov@example.com`,
         "text": "Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Это где ж такие красоты? Плюсую, но слишком много буквы!"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Согласен с автором! Планируете записать видосик на эту тему?"
       }
     ]
   },
   {
+    "user": `ivanov@example.com`,
     "title": "Как перестать беспокоиться и начать жить.",
     "createdDate": "06.04.2021, 00:45:40",
     "announce": "Простые ежедневные упражнения помогут достичь успеха. Это один из лучших рок-музыкантов. Программировать не настолько сложно, как об этом говорят. Первая большая ёлка была установлена только в 1938 году.",
@@ -81,14 +107,17 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `petrov@example.com`,
         "text": "Планируете записать видосик на эту тему?"
       },
       {
+        "user": `ivanov@example.com`,
         "text": "Согласен с автором! Совсем немного..."
       }
     ]
   },
   {
+    "user": `petrov@example.com`,
     "title": "Рок — это протест.",
     "createdDate": "27.03.2021, 21:21:06",
     "announce": "Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Программировать не настолько сложно, как об этом говорят. Как начать действовать? Для начала просто соберитесь. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.",
@@ -103,17 +132,21 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `ivanov@example.com`,
         "text": "Планируете записать видосик на эту тему?"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Плюсую, но слишком много буквы! Мне кажется или я уже читал это где-то? Согласен с автором!"
       },
       {
+        "user": `ivanov@example.com`,
         "text": "Планируете записать видосик на эту тему?"
       }
     ]
   },
   {
+    "user": `ivanov@example.com`,
     "title": "Как достигнуть успеха не вставая с кресла.",
     "createdDate": "12.03.2021, 17:53:25",
     "announce": "Ёлки — это не просто красивое дерево. Это прочная древесина. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Он написал больше 30 хитов.",
@@ -129,9 +162,11 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `ivanov@example.com`,
         "text": "Хочу такую же футболку :-)"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Плюсую, но слишком много буквы! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили."
       }
     ]
@@ -145,7 +180,7 @@ const app = express();
 app.use(express.json());
 
 beforeAll(async () => {
-  await initDB(mockDB, {categories: mockCategories, posts: mockPosts});
+  await initDB(mockDB, {categories: mockCategories, posts: mockPosts, users: mockUsers});
   category(app, new DataService(mockDB));
 });
 

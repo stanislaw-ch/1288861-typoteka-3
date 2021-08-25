@@ -5,6 +5,7 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const initDB = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 const post = require(`./post`);
 const DataService = require(`../data-service/post`);
 const CommentService = require(`../data-service/comment`);
@@ -23,9 +24,27 @@ const mockCategories = [
   `Программирование`,
 ];
 
+const mockUsers = [
+  {
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    email: `ivanov@example.com`,
+    passwordHash: passwordUtils.hashSync(`ivanov`),
+    avatar: `avatar-1.jpg`
+  },
+  {
+    firstName: `Пётр`,
+    lastName: `Петров`,
+    email: `petrov@example.com`,
+    passwordHash: passwordUtils.hashSync(`petrov`),
+    avatar: `avatar-2.jpg`
+  }
+];
+
 const mockPosts = [
   /* eslint-disable */
   {
+    "user": `ivanov@example.com`,
     "title": "Обзор новейшего смартфона. Обзор новейшего смартфона.",
     "createdDate": "11.02.2021, 08:37:49",
     "announce": "Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Золотое сечение — соотношение двух величин, гармоническая пропорция. Он написал больше 30 хитов. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много.",
@@ -41,20 +60,25 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `petrov@example.com`,
         "text": "Плюсую, но слишком много буквы! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Хочу такую же футболку :-)"
       },
       {
+        "user": `ivanov@example.com`,
         "text": "Это где ж такие красоты? Планируете записать видосик на эту тему? Совсем немного..."
       },
       {
+        "user": `ivanov@example.com`,
         "text": "Согласен с автором!"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Совсем немного... Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты?"
       }
     ]
   },
   {
+    "user": `petrov@example.com`,
     "title": "Как собрать камни бесконечности.",
     "createdDate": "22.03.2021, 07:58:44",
     "announce": "Как начать действовать? Для начала просто соберитесь. Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Достичь успеха помогут ежедневные повторения. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем.",
@@ -65,14 +89,17 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `ivanov@example.com`,
         "text": "Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Это где ж такие красоты? Плюсую, но слишком много буквы!"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Согласен с автором! Планируете записать видосик на эту тему?"
       }
     ]
   },
   {
+    "user": `ivanov@example.com`,
     "title": "Как перестать беспокоиться и начать жить.",
     "createdDate": "06.04.2021, 00:45:40",
     "announce": "Простые ежедневные упражнения помогут достичь успеха. Это один из лучших рок-музыкантов. Программировать не настолько сложно, как об этом говорят. Первая большая ёлка была установлена только в 1938 году.",
@@ -82,15 +109,18 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `petrov@example.com`,
         "text": "Планируете записать видосик на эту тему?"
       },
       {
+        "user": `ivanov@example.com`,
         "text": "Согласен с автором! Совсем немного..."
       }
     ]
   },
   {
-    "title": "Рок — это протест. Рок — это протест.",
+    "user": `petrov@example.com`,
+    "title": "Рок — это протест.",
     "createdDate": "27.03.2021, 21:21:06",
     "announce": "Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Программировать не настолько сложно, как об этом говорят. Как начать действовать? Для начала просто соберитесь. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.",
     "fullText": "Золотое сечение — соотношение двух величин, гармоническая пропорция. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Первая большая ёлка была установлена только в 1938 году. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Собрать камни бесконечности легко, если вы прирожденный герой. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Простые ежедневные упражнения помогут достичь успеха. Достичь успеха помогут ежедневные повторения. Программировать не настолько сложно, как об этом говорят. Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Ёлки — это не просто красивое дерево. Это прочная древесина. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Он написал больше 30 хитов. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Из под его пера вышло 8 платиновых альбомов. Это один из лучших рок-музыкантов. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Как начать действовать? Для начала просто соберитесь.",
@@ -104,17 +134,21 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `ivanov@example.com`,
         "text": "Планируете записать видосик на эту тему?"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Плюсую, но слишком много буквы! Мне кажется или я уже читал это где-то? Согласен с автором!"
       },
       {
+        "user": `ivanov@example.com`,
         "text": "Планируете записать видосик на эту тему?"
       }
     ]
   },
   {
+    "user": `ivanov@example.com`,
     "title": "Как достигнуть успеха не вставая с кресла.",
     "createdDate": "12.03.2021, 17:53:25",
     "announce": "Ёлки — это не просто красивое дерево. Это прочная древесина. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Он написал больше 30 хитов.",
@@ -130,9 +164,11 @@ const mockPosts = [
     ],
     "comments": [
       {
+        "user": `ivanov@example.com`,
         "text": "Хочу такую же футболку :-)"
       },
       {
+        "user": `petrov@example.com`,
         "text": "Плюсую, но слишком много буквы! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили."
       }
     ]
@@ -142,7 +178,7 @@ const mockPosts = [
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, {categories: mockCategories, posts: mockPosts});
+  await initDB(mockDB, {categories: mockCategories, posts: mockPosts, users: mockUsers});
   const app = express();
   app.use(express.json());
   post(app, new DataService(mockDB), new CommentService(mockDB));
@@ -188,9 +224,8 @@ describe(`API creates an article if data is valid`, () => {
     createdDate: `2021-02-27`,
     announce: `Как начать действовать? Для начала просто соберитесь. Ёлки — это не просто красивое дерево. Это прочная древесина. Из под его пера вышло 8 платиновых альбомов. Освоить вёрстку несложно.`,
     fullText: `Как начать действовать? Для начала просто соберитесь. Ёлки — это не просто красивое дерево. Это прочная древесина. Из под его пера вышло 8 платиновых альбомов. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
-    categories: [
-      1
-    ],
+    categories: [1],
+    userId: 1
   };
   let app; let response;
 
@@ -217,6 +252,7 @@ describe(`API refuses to create an article if data is invalid`, () => {
     title: `Рок — это протест. Рок — это протест.`,
     announce: `Как начать действовать? Для начала просто соберитесь. Ёлки — это не просто красивое дерево. Это прочная древесина. Из под его пера вышло 8 платиновых альбомов. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
     createdDate: `27.02.2021, 00:15:27`,
+    userId: 1
   };
 
   let app;
@@ -270,6 +306,7 @@ describe(`API changes existent article`, () => {
     title: `Дам погладить котика Дам погладить котика`,
     announce: `Для начала просто соберитесь. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами.`,
     createdDate: `2021-03-01`,
+    userId: 1
   };
   let app;
   let response;
@@ -298,6 +335,7 @@ test(`API returns status code 404 when trying to change non-existent article`, a
     title: `Как собрать камни бесконечности.`,
     announce: `Как собрать камни бесконечности.`,
     createdDate: `2021-02-22`,
+    userId: 1
   };
 
   return request(app)
@@ -314,6 +352,7 @@ test(`API returns status code 400 when trying to change an article with invalid 
     categories: [1, 2],
     title: `невалидный`,
     announce: `объект объявления`,
+    userId: 1
   };
 
   return request(app)
@@ -368,7 +407,8 @@ describe(`API returns a list of comments to given article`, () => {
 describe(`API creates a comment if data is valid`, () => {
 
   const newComment = {
-    text: `Валидному комментарию достаточно этого поля`
+    text: `Валидному комментарию достаточно этого поля`,
+    userId: 1
   };
 
   let app;
@@ -403,20 +443,22 @@ test(`API refuses to create a comment to non-existent article and returns status
 });
 
 test(`API refuses to create a comment when data is invalid, and returns status code 400`, async () => {
+  const invalidComment = {
+    text: `Не указан userId`
+  };
 
   const app = await createAPI();
 
   return request(app)
     .post(`/articles/2/comments`)
     .send({})
+    .send(invalidComment)
     .expect(HttpCode.BAD_REQUEST);
 });
 
 describe(`API correctly deletes a comment`, () => {
 
-  let app;
-
-  let response;
+  let app; let response;
 
   beforeAll(async () => {
     app = await createAPI();

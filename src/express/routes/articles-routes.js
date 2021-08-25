@@ -24,7 +24,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles-by-category`));
+const POSTS_PER_PAGE = 8;
+
+articlesRouter.get(`/category/:id`, async (req, res) => {
+  let {page = 1} = req.query;
+  page = +page;
+  const limit = POSTS_PER_PAGE;
+  const offset = (page - 1) * POSTS_PER_PAGE;
+
+  const {id} = req.params;
+  const posts = await api.getPosts({limit, offset});
+  const categories = await api.getCategories(true);
+  res.render(`articles-by-category`, {id, posts, categories});
+});
+
 articlesRouter.get(`/add`, async (req, res) => {
   const {error} = req.query;
   const categories = await api.getCategories();
@@ -83,15 +96,16 @@ articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
   const {error} = req.query;
   const post = await api.getPost(id, true);
-  res.render(`post`, {post, id, error});
+  const categories = await api.getCategories(true);
+  res.render(`post`, {post, id, error, categories});
 });
 
 articlesRouter.post(`/:id/comments`, async (req, res) => {
   const {id} = req.params;
-  const {comment} = req.body;
+  const {message} = req.body;
 
   try {
-    await api.createComment(id, {text: comment});
+    await api.createComment(id, {text: message});
     res.redirect(`/articles/${id}`);
   } catch (error) {
     res.redirect(`/articles/${id}?error=${encodeURIComponent(error.response.data)}`);

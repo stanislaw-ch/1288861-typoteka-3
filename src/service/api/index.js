@@ -4,6 +4,7 @@ const {Router} = require(`express`);
 const category = require(`../api/category`);
 const post = require(`../api/post`);
 const search = require(`../api/search`);
+const user = require(`../api/user`);
 
 const getSequelize = require(`../lib/sequelize`);
 const defineModels = require(`../models`);
@@ -13,6 +14,7 @@ const {
   SearchService,
   PostService,
   CommentService,
+  UserService,
 } = require(`../data-service`);
 
 const getRoutes = async () => {
@@ -22,6 +24,7 @@ const getRoutes = async () => {
   category(router, new CategoryService(getSequelize()));
   search(router, new SearchService(getSequelize()));
   post(router, new PostService(getSequelize()), new CommentService(getSequelize()));
+  user(router, new UserService(getSequelize()));
 
   return router;
 };

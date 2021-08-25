@@ -1,5 +1,5 @@
 ul.themes
   each category in categories
     li.themes__item
-      a.themes__item-link(href='#') #{category.name} !{' '}
+      a.themes__item-link(href=`articles/category/${category.id}`) #{category.name} !{' '}
         sup #{category.count}

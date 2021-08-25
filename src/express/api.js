@@ -35,11 +35,11 @@ class API {
     return this._load(`/search`, {params: {query}});
   }
 
-  async getCategories(count) {
+  getCategories(count) {
     return this._load(`/categories`, {params: {count}});
   }
 
-  async createPost(data) {
+  createPost(data) {
     return this._load(`/articles`, {
       method: HttpMethod.POST,
       data
@@ -55,6 +55,13 @@ class API {
 
   createComment(id, data) {
     return this._load(`/articles/${id}/comments`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
+  createUser(data) {
+    return this._load(`/user`, {
       method: HttpMethod.POST,
       data
     });

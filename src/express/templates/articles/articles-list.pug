@@ -6,12 +6,13 @@ section.main-page__list.preview
         ul.preview__breadcrumbs
           each category in post.categories
             li.preview__breadcrumbs-item
-              a.preview__breadcrumbs-link(href='/categories') #{category.name}
-        .preview__background
-          img.preview__background-image(src='/img/skyscraper@1x.jpg' width='460' height='240' srcset='/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x' alt='Фотография небоскреба')
-        time.preview__time(datetime=`${post.createdDate}`) #{formatDate(post.createdDate)}
+              a.preview__breadcrumbs-link(href=`/articles/category/${category.id}`) #{category.name}
+        if (post.picture)
+          .preview__background
+            img.preview__background-image(src=`/img/${post.picture}` width='460' height='240' alt='Фотография небоскреба')
+        time.preview__time(datetime=`${post.createdAt}`) #{formatDate(post.createdAt)}
         h3.preview__name
-          a.preview__name-link(href='/articles/category') #{post.title}
+          a.preview__name-link(href=`/articles/${post.id}`) #{post.title}
         p.preview__text #{post.announce}
         a.preview__comment(href='/my/comments')
           | Комментарии
