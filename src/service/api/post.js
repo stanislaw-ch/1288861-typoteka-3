@@ -11,20 +11,31 @@ module.exports = (app, postService, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit, comments} = req.query;
+    const {offset, limit} = req.query;
     let result;
     if (limit || offset) {
       result = await postService.findPage({limit, offset});
     } else {
-      result = await postService.findAll(comments);
+      result = await postService.findAll(true);
     }
+
     res.status(HttpCode.OK).json(result);
+  });
+
+  route.get(`/popular`, async (req, res) => {
+    const result = await postService.findPopular();
+
+    return res.status(HttpCode.OK).json(result);
+  });
+
+  route.get(`/comments`, async (req, res) => {
+    const comments = await commentService.findRecent();
+    return res.status(HttpCode.OK).json(comments);
   });
 
   route.get(`/:postId`, async (req, res) => {
     const {postId} = req.params;
-    const {comments} = req.query;
-    const post = await postService.findOne(postId, comments);
+    const post = await postService.findOne(postId, true);
 
     if (!post) {
       return res.status(HttpCode.NOT_FOUND)
@@ -97,4 +108,5 @@ module.exports = (app, postService, commentService) => {
     return res.status(HttpCode.CREATED)
       .json(comment);
   });
+
 };

@@ -5,10 +5,12 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api`).getAPI();
 const upload = require(`../middle-wares/upload`);
+const {isAdmin} = require(`../../utils`);
 
 const POSTS_PER_PAGE = 8;
 
 mainRouter.get(`/`, async (req, res) => {
+  const {user} = req.session;
   let {page = 1} = req.query;
   page = +page;
   const limit = POSTS_PER_PAGE;
@@ -16,19 +18,27 @@ mainRouter.get(`/`, async (req, res) => {
 
   const [
     {count, posts},
-    categories
+    categories,
+    postInTrends,
+    commentsInTrends,
   ] = await Promise.all([
     api.getPosts({limit, offset}),
-    api.getCategories(true)
+    api.getCategories(true),
+    api.getPopularArticles(true),
+    api.getRecentComments()
   ]);
+
 
   const totalPages = Math.ceil(count / POSTS_PER_PAGE);
 
-  res.render(`main`, {posts, categories, postInTrends: posts.slice(0, 4), page, totalPages});
+  const admin = isAdmin(user);
+
+  res.render(`main`, {posts, categories, page, totalPages, postInTrends, commentsInTrends, user, admin});
 });
 
 mainRouter.get(`/register`, (req, res) => {
-  res.render(`sign-up`);
+  const {user} = req.session;
+  res.render(`user/sign-up`, {user});
 });
 
 mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
@@ -46,37 +56,73 @@ mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
     res.redirect(`/login`);
   } catch (errors) {
     const errorMessages = errors.response.data.split(`\n`);
-    res.render(`sign-up`, {errorMessages});
+    const {user} = req.session;
+    res.render(`user/sign-up`, {errorMessages, user});
   }
 });
 
 mainRouter.get(`/login`, (req, res) => {
-  res.render(`login`);
+  const {user} = req.session;
+  res.render(`user/login`, {user});
+});
+
+mainRouter.post(`/login`, async (req, res) => {
+  try {
+    const user = await api.auth(req.body.email, req.body.password);
+    req.session.user = user;
+    res.redirect(`/`);
+  } catch (errors) {
+    const errorMessages = errors.response.data.split(`\n`);
+    const {user} = req.session;
+    res.render(`user/login`, {user, errorMessages});
+  }
+});
+
+mainRouter.get(`/logout`, (req, res) => {
+  delete req.session.user;
+  res.redirect(`/`);
 });
 
 mainRouter.get(`/search`, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
+
   try {
     const {search} = req.query;
+    const results = await api.search(search);
+
     if (search === undefined) {
-      res.render(`search`);
+      res.render(`user/search`, {
+        user,
+        admin
+      });
       return;
     }
 
-    const results = await api.search(search);
-
-    res.render(`search`, {
-      results
+    res.render(`user/search`, {
+      results,
+      user,
+      admin
     });
   } catch (error) {
-    res.render(`search`, {
-      results: []
+    res.render(`user/search`, {
+      results: [],
+      user,
+      admin
     });
   }
 });
 
 mainRouter.get(`/categories`, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
   const categories = await api.getCategories();
-  res.render(`all-categories`, {categories});
+
+  if (admin) {
+    res.render(`admin/all-categories`, {categories, user, admin});
+  } else {
+    res.redirect(`/`);
+  }
 });
 
 module.exports = mainRouter;

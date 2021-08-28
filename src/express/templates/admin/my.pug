@@ -1,4 +1,4 @@
-extends admin/layout.pug
+extends layout.pug
 
 block content
   main.main-page.main-page--padding
@@ -8,6 +8,6 @@ block content
       each post in posts
         li.notes__list-item
           time.notes__item-time(datetime=`${post.createdDate}`) #{formatDate(post.createdDate)}
-          a.notes__item-text(href=`articles/${post.id}`) #{post.title}
+          a.notes__item-text(href=`articles/edit/${post.id}`) #{post.title}
           button.notes__button.button.button--close-item(type='button')
             span.visually-hidden Закрыть строку списка

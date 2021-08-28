@@ -1,50 +1,59 @@
 'use strict';
 
 const {Router} = require(`express`);
-const multer = require(`multer`);
-const path = require(`path`);
-const {nanoid} = require(`nanoid`);
-const {ensureArray} = require(`../../utils`);
+const csrf = require(`csurf`);
 
-const UPLOAD_DIR = `../upload/img/`;
+const upload = require(`../middle-wares/upload`);
+const auth = require(`../middle-wares/auth`);
+const {ensureArray, isAdmin} = require(`../../utils`);
 
-const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
-
-const articlesRouter = new Router();
 const api = require(`../api`).getAPI();
+const articlesRouter = new Router();
 
-const storage = multer.diskStorage({
-  destination: uploadDirAbsolute,
-  filename: (req, file, cb) => {
-    const uniqueName = nanoid(10);
-    const extension = file.originalname.split(`.`).pop();
-    cb(null, `${uniqueName}.${extension}`);
-  }
-});
-
-const upload = multer({storage});
+const csrfProtection = csrf();
 
 const POSTS_PER_PAGE = 8;
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
   let {page = 1} = req.query;
   page = +page;
   const limit = POSTS_PER_PAGE;
   const offset = (page - 1) * POSTS_PER_PAGE;
 
   const {id} = req.params;
-  const posts = await api.getPosts({limit, offset});
+  const posts = await api.getPosts(true);
   const categories = await api.getCategories(true);
-  res.render(`articles-by-category`, {id, posts, categories});
+  const category = categories.find((item) => {
+    return item.id === +id;
+  });
+  const postsInCategory = posts.filter((post) => {
+    return post.categories.some((item) => {
+      return item.id === +id;
+    });
+  });
+
+  const totalPages = Math.ceil(postsInCategory.length / POSTS_PER_PAGE);
+  const postsByPage = postsInCategory.slice(offset, offset + limit);
+  res.render(`user/articles-by-category`, {postsByPage, id, category, totalPages, page, categories, user, admin});
 });
 
-articlesRouter.get(`/add`, async (req, res) => {
-  const {error} = req.query;
+articlesRouter.get(`/add`, auth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
   const categories = await api.getCategories();
-  res.render(`post/new-post`, {categories, error});
+
+  if (admin) {
+    res.render(`admin/new-post`, {categories, user, admin, csrfToken: req.csrfToken()});
+  } else {
+    res.redirect(`/`);
+  }
 });
 
-articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
+articlesRouter.post(`/add`, auth, upload.single(`upload`), csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
   const {body, file} = req;
   const postData = {
     createdDate: body.date,
@@ -53,26 +62,37 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     categories: ensureArray(body.category),
     announce: body.announcement,
     fullText: body[`full-text`],
+    userId: user.id
   };
   try {
     await api.createPost(postData);
     res.redirect(`/my`);
-  } catch (error) {
-    res.redirect(`/articles/add?error=${encodeURIComponent(error.response.data)}`);
+  } catch (errors) {
+    const errorMessages = errors.response.data.split(`\n`);
+    const categories = await api.getCategories();
+    res.render(`admin/new-post`, {categories, user, admin, errorMessages, csrfToken: req.csrfToken()});
   }
 });
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, auth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
   const {id} = req.params;
-  const {error} = req.query;
   const [post, categories] = await Promise.all([
     api.getPost(id),
     api.getCategories()
   ]);
-  res.render(`post/edit-post`, {id, post, categories, error});
+
+  if (admin) {
+    res.render(`admin/edit-post`, {id, post, categories, user, admin, csrfToken: req.csrfToken()});
+  } else {
+    res.redirect(`/`);
+  }
 });
 
-articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
+articlesRouter.post(`/edit/:id`, auth, upload.single(`upload`), csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
   const {body, file} = req;
   const {id} = req.params;
   const postData = {
@@ -82,33 +102,44 @@ articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
     categories: ensureArray(body.category),
     announce: body.announcement,
     fullText: body[`full-text`],
+    userId: user.id
   };
 
   try {
     await api.editPost(id, postData);
     res.redirect(`/my`);
-  } catch (error) {
-    res.redirect(`/articles/edit/${id}?error=${encodeURIComponent(error.response.data)}`);
+  } catch (errors) {
+    const errorMessages = errors.response.data.split(`\n`);
+    const [post, categories] = await Promise.all([
+      api.getPost(id),
+      api.getCategories()
+    ]);
+    res.render(`admin/edit-post`, {id, post, categories, user, admin, errorMessages, csrfToken: req.csrfToken()});
   }
 });
 
-articlesRouter.get(`/:id`, async (req, res) => {
+articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const admin = isAdmin(user);
   const {id} = req.params;
-  const {error} = req.query;
   const post = await api.getPost(id, true);
   const categories = await api.getCategories(true);
-  res.render(`post`, {post, id, error, categories});
+  res.render(`user/post`, {post, id, user, admin, categories, csrfToken: req.csrfToken()});
 });
 
-articlesRouter.post(`/:id/comments`, async (req, res) => {
+articlesRouter.post(`/:id/comments`, auth, async (req, res) => {
+  const {user} = req.session;
   const {id} = req.params;
   const {message} = req.body;
 
   try {
-    await api.createComment(id, {text: message});
+    await api.createComment(id, {userId: user.id, text: message});
     res.redirect(`/articles/${id}`);
-  } catch (error) {
-    res.redirect(`/articles/${id}?error=${encodeURIComponent(error.response.data)}`);
+  } catch (errors) {
+    const errorMessages = errors.response.data.split(`\n`);
+    const post = await api.getPost(id, true);
+    const categories = await api.getCategories(true);
+    res.render(`post`, {post, id, user, categories, errorMessages, csrfToken: req.csrfToken()});
   }
 });
 

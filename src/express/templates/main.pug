@@ -1,14 +1,67 @@
 extends layout.pug
 
 block content
-  include partials/header-main.pug
   main.main-page
     h1.visually-hidden Главная страница личного блога Типотека
     p
       | Это приветственный текст, который владелец блога может выбрать, чтобы описать себя 👏
+
+    //- .main-page__empty-wrapper
+    //-   p.main-page__empty-text Здесь пока пусто!
+
     section.main-page__theme-list
       h2.visually-hidden Список тем
-      include articles/categories.pug
-    include articles/in-trend.pug
-    include articles/articles-list.pug
+      ul.themes
+        each category in categories
+          li.themes__item
+            a.themes__item-link(href=`articles/category/${category.id}`) #{category.name} !{' '}
+              sup #{category.count}
+    .main-page__section-flex
+      section.main-page__hot.hot
+        h2.hot__name
+          | Самое обсуждаемое&#32;
+          span.hot__icon.hot__icon--fire
+        if postInTrends
+          ul.hot__list
+            each postInTrend in postInTrends
+              li.hot__list-item
+                a.hot__list-link(href=`/articles/${postInTrend.id}`)
+                  | #{formatAnnounce(postInTrend.announce)}
+                  sup.hot__link-sup #{postInTrend.comments.length}
+        if !postInTrends.length
+          p.last__empty Здесь пока ничего нет...
+      section.main-page__last.last
+        h2.last__name
+          | Последние комментарии&#32;
+          span.last__icon.last__icon--cloud
+        if commentsInTrends
+          ul.last__list
+            each comment in commentsInTrends
+              li.last__list-item
+                img.last__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
+                b.last__list-name #{comment.users.firstName} #{comment.users.lastName}
+                a.last__list-link(href=`articles/${comment.posts.id}`)
+                  | #{comment.text}
+        if !commentsInTrends
+          p.last__empty Здесь пока ничего нет...
+    section.main-page__list.preview
+      h2.visually-hidden Список превью статей
+      ul.preview__list
+        each post in posts
+          li.preview__item
+            ul.preview__breadcrumbs
+              each category in post.categories
+                li.preview__breadcrumbs-item
+                  a.preview__breadcrumbs-link(href=`/articles/category/${category.id}`) #{category.name}
+            if (post.picture)
+              .preview__background
+                img.preview__background-image(src=`/img/${post.picture}` width='460' height='240' alt='Фотография небоскреба')
+            time.preview__time(datetime=`${post.createdAt}`) #{formatDate(post.createdAt)}
+            h3.preview__name
+              a.preview__name-link(href=`/articles/${post.id}`) #{post.title}
+            p.preview__text #{post.announce}
+            a.preview__comment(href='/my/comments')
+              | Комментарии
+              span.preview__cloud
+              b.preview__comment-count !{' '}
     +pagination(page, totalPages, 2, `?`)

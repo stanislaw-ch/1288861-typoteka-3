@@ -27,7 +27,7 @@ const schema = Joi.object({
     'string.min': `"Полный текст публикации" - должен содержать минимум 30 символов`,
     'string.max': `"Полный текст публикации" - должен содержать максимум 1000 символов`,
   }),
-  // userId: Joi.number().integer().positive().required(),
+  userId: Joi.number().integer().positive().required(),
 });
 
 module.exports = (req, res, next) => {

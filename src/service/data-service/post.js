@@ -108,6 +108,25 @@ class PostService {
     return !!affectedRows;
   }
 
+  async findPopular() {
+    const articles = await this._Post.findAll({
+      attributes: [`announce`, `id`],
+      include: Aliases.COMMENTS
+    });
+
+    const popular = articles.map((item) => item.get())
+      .filter((el) => {
+        return el.comments.length > 0;
+      });
+
+    const sorted = popular
+      .sort((a, b) => {
+        return b.comments.length - a.comments.length;
+      }).slice(0, 4);
+
+    return sorted;
+  }
+
 }
 
 module.exports = PostService;

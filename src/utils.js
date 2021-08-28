@@ -1,4 +1,5 @@
 'use strict';
+const {ADMIN_ID} = require(`./constants`);
 
 module.exports.getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -35,3 +36,11 @@ module.exports.getRandomDate = () => {
 };
 
 module.exports.ensureArray = (value) => Array.isArray(value) ? value : [value];
+
+module.exports.isAdmin = (user) => {
+  let admin = false;
+  if (user && user.id === ADMIN_ID) {
+    admin = true;
+  }
+  return admin;
+};

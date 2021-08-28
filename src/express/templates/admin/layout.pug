@@ -10,47 +10,9 @@ head
   link(rel='preload' href='./fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
   link(rel='stylesheet' href='/css/style.min.css')
 body
-  -
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      const options = {
-        day: `numeric`,
-        month: `numeric`,
-        year: `numeric`,
-        hour: `numeric`,
-        minute: `numeric`,
-      };
-      return date.toLocaleString(`ru-RU`, options);
-    }
-
-  mixin errorCommentMessage(message)
-    if message
-      p.comments__error= message
-
-  mixin errorMessage(message)
-    if message
-      p.form__error-message= message
-
-  mixin errorRegMessage(message)
-    if message
-      .form__validation-error
-        p.form__error-message При регистрации произошли ошибки:
-        ul.form__errors
-          li.form__error= message
-
-  mixin errorMessages(messages)
-    each message in messages
-      ul.form__errors
-        li.form__error= message
-
-  mixin inputMessages(messages)
-    if (error)
-      - let errorArr = error.split(`\n`)
-        each message in errorArr
-          - if (message.includes(messages))
-            p.form__error-message= message
+  include ../mixins/mixins.pug
   .wrapper-color
-    include ../partials/header-admin.pug
+    include ../partials/header.pug
     block content
     include ../partials/footer.pug
     script(src="/js/vendor.js")

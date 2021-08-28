@@ -17,14 +17,14 @@ const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
-const pictureNames = [`sea-fullsize`, ``];
+const pictureNames = [`sea`, `forest`, `skyscraper`, ``];
 
 const getPictureFileName = () => {
-  const index = pictureNames[getRandomInt(0, pictureNames.length - 1)];
-  if (index === ``) {
+  const name = pictureNames[getRandomInt(0, pictureNames.length - 1)];
+  if (name === ``) {
     return null;
   }
-  return `${index}@1x.jpg`;
+  return `${name}@1x.jpg`;
 };
 
 const generateComments = (count, comments, users) => (

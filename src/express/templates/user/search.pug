@@ -1,4 +1,4 @@
-extends admin/layout.pug
+extends ../layout.pug
 
 block content
   main
@@ -12,6 +12,10 @@ block content
             button.search__button.button.button--transparent(type='submit') Найти
         if results
           if results.length
-            include search/result.pug
+            each result in results
+              .search__result
+                time.search__date(datetime='2019-03-21T20:33') #{result.createdDate}
+                a.search__link
+                  | #{result.title}
           else
-            include search/empty.pug
+            p.search-page__empty Ничего не нашлось
