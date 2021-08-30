@@ -1,4 +1,11 @@
 -
+  const isChecked = (category, post) => {
+      const result = post.categories.some((item) => {
+        return item.id === category.id;
+      })
+      return result;
+  }
+
   const formatAnnounce = (text) => {
     if (text.length <= 100) {
       return text

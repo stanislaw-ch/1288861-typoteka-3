@@ -80,7 +80,7 @@ articlesRouter.get(`/edit/:id`, auth, csrfProtection, async (req, res) => {
       api.getPost(id),
       api.getCategories()
     ]);
-    res.render(`admin/edit-post`, {id, post, categories, user, csrfToken: req.csrfToken()});
+    res.render(`admin/new-post`, {id, post, categories, user, csrfToken: req.csrfToken()});
   } else {
     res.redirect(`/`);
   }
@@ -109,7 +109,7 @@ articlesRouter.post(`/edit/:id`, auth, upload.single(`upload`), csrfProtection, 
       api.getPost(id),
       api.getCategories()
     ]);
-    res.render(`admin/edit-post`, {id, post, categories, user, errorMessages, csrfToken: req.csrfToken()});
+    res.render(`admin/new-post`, {id, post, categories, user, errorMessages, csrfToken: req.csrfToken()});
   }
 });
 
