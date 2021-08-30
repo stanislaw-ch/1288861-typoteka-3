@@ -16,31 +16,39 @@ module.exports = (app, service) => {
   app.use(`/user`, route);
 
   route.post(`/`, userValidator(service), async (req, res) => {
-    const data = req.body;
+    try {
+      const data = req.body;
 
-    data.passwordHash = await passwordUtils.hash(data.password);
+      data.passwordHash = await passwordUtils.hash(data.password);
 
-    const result = await service.create(data);
+      const result = await service.create(data);
 
-    delete result.passwordHash;
+      delete result.passwordHash;
 
-    res.status(HttpCode.CREATED)
-      .json(result);
+      return res.status(HttpCode.CREATED)
+        .json(result);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
   });
 
   route.post(`/auth`, async (req, res) => {
-    const {email, password} = req.body;
-    const user = await service.findByEmail(email);
-    if (!user) {
-      res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.EMAIL);
-      return;
-    }
-    const passwordIsCorrect = await passwordUtils.compare(password, user.passwordHash);
-    if (passwordIsCorrect) {
-      delete user.passwordHash;
-      res.status(HttpCode.OK).json(user);
-    } else {
-      res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.PASSWORD);
+    try {
+      const {email, password} = req.body;
+      const user = await service.findByEmail(email);
+      if (!user) {
+        res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.EMAIL);
+        return;
+      }
+      const passwordIsCorrect = await passwordUtils.compare(password, user.passwordHash);
+      if (passwordIsCorrect) {
+        delete user.passwordHash;
+        res.status(HttpCode.OK).json(user);
+      } else {
+        res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.PASSWORD);
+      }
+    } catch (e) {
+      res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
   });
 };

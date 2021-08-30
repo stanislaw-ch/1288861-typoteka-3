@@ -17,6 +17,7 @@ block content
             .form__field
               label
                 input(type='password' name='password' placeholder='Пароль' required='')
-            +errorFormMessage(error)
+            if errorMessages
+              +errorMessage(errorMessages)
             button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
             input(type='hidden' name='_csrf' value=`${csrf}`)

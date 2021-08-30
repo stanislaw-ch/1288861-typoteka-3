@@ -11,102 +11,141 @@ module.exports = (app, postService, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit} = req.query;
-    let result;
-    if (limit || offset) {
-      result = await postService.findPage({limit, offset});
-    } else {
-      result = await postService.findAll(true);
-    }
+    try {
+      const {offset, limit} = req.query;
+      let result;
 
-    res.status(HttpCode.OK).json(result);
+      if (limit || offset) {
+        result = await postService.findPage({limit, offset});
+      } else {
+        result = await postService.findAll(true);
+      }
+
+      return res.status(HttpCode.OK).json(result);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
   });
 
   route.get(`/popular`, async (req, res) => {
-    const result = await postService.findPopular();
+    try {
+      const result = await postService.findPopular();
 
-    return res.status(HttpCode.OK).json(result);
+      return res.status(HttpCode.OK).json(result);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
   });
 
   route.get(`/comments`, async (req, res) => {
-    const comments = await commentService.findRecent();
-    return res.status(HttpCode.OK).json(comments);
+    try {
+      const comments = await commentService.findRecent();
+      return res.status(HttpCode.OK).json(comments);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
   });
 
   route.get(`/:postId`, async (req, res) => {
-    const {postId} = req.params;
-    const post = await postService.findOne(postId, true);
+    try {
+      const {postId} = req.params;
+      const post = await postService.findOne(postId, true);
 
-    if (!post) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found with ${postId}`);
+      if (!post) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found with ${postId}`);
+      }
+
+      return res.status(HttpCode.OK)
+        .json(post);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
-
-    return res.status(HttpCode.OK)
-      .json(post);
   });
 
   route.post(`/`, postValidator, async (req, res) => {
-    const post = await postService.create(req.body);
+    try {
+      const post = await postService.create(req.body);
 
-    return res.status(HttpCode.CREATED)
+      return res.status(HttpCode.CREATED)
       .json(post);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
   });
 
   route.put(`/:postId`, postValidator, async (req, res) => {
-    const {postId} = req.params;
+    try {
+      const {postId} = req.params;
 
-    const updated = await postService.update(postId, req.body);
+      const updated = await postService.update(postId, req.body);
 
-    if (!updated) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found with ${postId}`);
+      if (!updated) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found with ${postId}`);
+      }
+      return res.status(HttpCode.OK)
+        .send(`Updated`);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
-    return res.status(HttpCode.OK)
-      .send(`Updated`);
   });
 
   route.delete(`/:postId`, async (req, res) => {
-    const {postId} = req.params;
-    const post = await postService.drop(postId);
+    try {
+      const {postId} = req.params;
+      const post = await postService.drop(postId);
 
-    if (!post) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found`);
+      if (!post) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found`);
+      }
+
+      return res.status(HttpCode.OK)
+        .json(post);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
-
-    return res.status(HttpCode.OK)
-      .json(post);
   });
 
   route.get(`/:postId/comments`, postExist(postService), async (req, res) => {
-    const {postId} = req.params;
-    const comments = await commentService.findAll(postId);
+    try {
+      const {postId} = req.params;
+      const comments = await commentService.findAll(postId);
 
-    res.status(HttpCode.OK)
-      .json(comments);
-
+      return res.status(HttpCode.OK)
+        .json(comments);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
   });
 
   route.delete(`/:postId/comments/:commentId`, postExist(postService), async (req, res) => {
-    const {commentId} = req.params;
-    const deleted = await commentService.drop(commentId);
+    try {
+      const {commentId} = req.params;
+      const deleted = await commentService.drop(commentId);
 
-    if (!deleted) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found`);
+      if (!deleted) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found`);
+      }
+
+      return res.status(HttpCode.OK)
+        .json(deleted);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
-
-    return res.status(HttpCode.OK)
-      .json(deleted);
   });
 
   route.post(`/:postId/comments`, [postExist(postService), commentValidator], (req, res) => {
-    const {post} = res.locals;
-    const comment = commentService.create(post.id, req.body);
+    try {
+      const {post} = res.locals;
+      const comment = commentService.create(post.id, req.body);
 
-    return res.status(HttpCode.CREATED)
-      .json(comment);
+      return res.status(HttpCode.CREATED)
+        .json(comment);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
   });
-
 };

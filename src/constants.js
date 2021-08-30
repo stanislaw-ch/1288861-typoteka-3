@@ -29,5 +29,4 @@ module.exports = {
     PUT: `PUT`,
     DELETE: `DELETE`
   },
-  ADMIN_ID: 1,
 };

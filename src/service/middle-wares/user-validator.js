@@ -30,6 +30,7 @@ const schema = Joi.object({
     'any.only': `"Повтор пароля" - не совпадает с уже введенным поролем`
   }),
   avatar: Joi.string().allow(null, ``),
+  isAdmin: Joi.boolean(),
 });
 
 module.exports = (service) => async (req, res, next) => {

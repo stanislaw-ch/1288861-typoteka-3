@@ -5,7 +5,6 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api`).getAPI();
 const upload = require(`../middle-wares/upload`);
-const {isAdmin} = require(`../../utils`);
 
 const POSTS_PER_PAGE = 8;
 
@@ -28,12 +27,9 @@ mainRouter.get(`/`, async (req, res) => {
     api.getRecentComments()
   ]);
 
-
   const totalPages = Math.ceil(count / POSTS_PER_PAGE);
 
-  const admin = isAdmin(user);
-
-  res.render(`main`, {posts, categories, page, totalPages, postInTrends, commentsInTrends, user, admin});
+  res.render(`main`, {posts, categories, page, totalPages, postInTrends, commentsInTrends, user});
 });
 
 mainRouter.get(`/register`, (req, res) => {
@@ -49,7 +45,8 @@ mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
     lastName: body.lastName,
     email: body.email,
     password: body.password,
-    passwordRepeated: body[`repeat-password`]
+    passwordRepeated: body[`repeat-password`],
+    isAdmin: false,
   };
   try {
     await api.createUser(userData);
@@ -85,7 +82,6 @@ mainRouter.get(`/logout`, (req, res) => {
 
 mainRouter.get(`/search`, async (req, res) => {
   const {user} = req.session;
-  const admin = isAdmin(user);
 
   try {
     const {search} = req.query;
@@ -94,7 +90,6 @@ mainRouter.get(`/search`, async (req, res) => {
     if (search === undefined) {
       res.render(`user/search`, {
         user,
-        admin
       });
       return;
     }
@@ -102,24 +97,21 @@ mainRouter.get(`/search`, async (req, res) => {
     res.render(`user/search`, {
       results,
       user,
-      admin
     });
   } catch (error) {
     res.render(`user/search`, {
       results: [],
       user,
-      admin
     });
   }
 });
 
 mainRouter.get(`/categories`, async (req, res) => {
   const {user} = req.session;
-  const admin = isAdmin(user);
-  const categories = await api.getCategories();
 
-  if (admin) {
-    res.render(`admin/all-categories`, {categories, user, admin});
+  if (user.isAdmin) {
+    const categories = await api.getCategories();
+    res.render(`admin/all-categories`, {categories, user});
   } else {
     res.redirect(`/`);
   }

@@ -10,7 +10,7 @@ header.header
       li.header__list-item
         a.header__enter(href='/login') Вход с паролем
 
-  if user && !admin
+  if user && !user.isAdmin
     nav.header__nav
       ul.header__nav-list
         li.header__list-item
@@ -20,7 +20,7 @@ header.header
     a.header__avatar.avatar
       img(src=`/img/${user.avatar}` alt='аватар пользователя')
 
-  if admin
+  if user.isAdmin
     button.button.button--colored.header__button-new
       a(href='/articles/add') Новая запись
     .header__dropdown
@@ -32,5 +32,6 @@ header.header
           a(href='/categories') Категории
         li.navigation__item
           a(href='/my/comments') Комментарии
-
+        li.navigation__item
+          a(href='/logout') Выйти
   a.header__search.button.button--search(href='/search' aria-label='поиск по сайту')
