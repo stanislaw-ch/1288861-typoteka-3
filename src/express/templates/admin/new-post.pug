@@ -5,10 +5,10 @@ block content
   section
     .popup.popup--new-publication.popup--anti
       .new-publication
-        form(action='/articles/add' method='POST' enctype="multipart/form-data")
+        form(action='' method='POST' enctype="multipart/form-data")
           input(type="hidden" name="_csrf" value=csrfToken)
           .new-publication__header
-            h1 Новая публикация
+            h1 #{post ? "Редактирование публикации" : "Новая публикация"}
             .new-publication__date-form
               h3 Дата публикации
               .new-publication__date-form-division
@@ -39,6 +39,9 @@ block content
                     .new-publication__checkbox(class=`new-publication__checkbox--${category.id}`)
                       input(type="checkbox" name="category" id=`checkbox-${category.id}` value=categories ? category.id : '' checked=isChecked(category, post))
                       label(for=`checkbox-${category.id}`) #{category.name}
+                  a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
+              if !categories
+                .new-publication__category-wrapper
                   a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
             .form__wrapper.form__wrapper--text
               +inputMessages(errorMessages, 'Категории')

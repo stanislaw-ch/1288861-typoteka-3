@@ -80,6 +80,8 @@ articlesRouter.get(`/edit/:id`, auth, csrfProtection, async (req, res) => {
       api.getPost(id),
       api.getCategories()
     ]);
+
+    console.log(post.categories);
     res.render(`admin/new-post`, {id, post, categories, user, csrfToken: req.csrfToken()});
   } else {
     res.redirect(`/`);

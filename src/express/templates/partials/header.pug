@@ -21,8 +21,8 @@ header.header
       img(src=`/img/${user.avatar}` alt='аватар пользователя')
 
   if user && user.isAdmin
-    button.button.button--colored.header__button-new
-      a(href='/articles/add') Новая запись
+    a(href='/articles/add')
+      button.button.button--colored.header__button-new Новая запись
     .header__dropdown
       a.button.button--burger.header__burger(href='#') Открыть меню
       ul.navigation.header__navigation
