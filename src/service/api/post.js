@@ -85,7 +85,7 @@ module.exports = (app, postService, commentService) => {
     }
   });
 
-  route.put(`/:postId`, postValidator, async (req, res) => {
+  route.put(`/:postId`, postValidator, postExist(postService), async (req, res) => {
     try {
       const {postId} = req.params;
 

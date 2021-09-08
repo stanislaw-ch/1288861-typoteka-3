@@ -30,14 +30,16 @@ const mockUsers = [
     lastName: `Иванов`,
     email: `ivanov@example.com`,
     passwordHash: passwordUtils.hashSync(`ivanov`),
-    avatar: `avatar-1.jpg`
+    avatar: `avatar-1.jpg`,
+    isAdmin: false,
   },
   {
     firstName: `Пётр`,
     lastName: `Петров`,
     email: `petrov@example.com`,
     passwordHash: passwordUtils.hashSync(`petrov`),
-    avatar: `avatar-2.jpg`
+    avatar: `avatar-2.jpg`,
+    isAdmin: false,
   }
 ];
 
@@ -192,14 +194,14 @@ describe(`API returns a list of all articles`, () => {
   beforeAll(async () => {
     const app = await createAPI();
     response = await request(app)
-      .get(`/articles`);
+    .get(`/articles`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
   test(`Returns a list of 5 articles`, () => expect(response.body.length).toBe(5));
 
-  test(`First article's title equals "Обзор новейшего смартфона. Обзор новейшего смартфона."`, () => expect(response.body[0].title).toBe(`Обзор новейшего смартфона. Обзор новейшего смартфона.`));
+  test(`First article's title equals "Как собрать камни бесконечности."`, () => expect(response.body[0].title).toBe(`Как собрать камни бесконечности.`));
 
 });
 
@@ -221,7 +223,7 @@ describe(`API creates an article if data is valid`, () => {
 
   const newPost = {
     title: `Рок — это протест. Рок — это протест.`,
-    createdDate: `27-02-2021`,
+    createdDate: `2021-06-19 00:00:00+02`,
     announce: `Как начать действовать? Для начала просто соберитесь. Ёлки — это не просто красивое дерево. Это прочная древесина. Из под его пера вышло 8 платиновых альбомов. Освоить вёрстку несложно.`,
     fullText: `Как начать действовать? Для начала просто соберитесь. Ёлки — это не просто красивое дерево. Это прочная древесина. Из под его пера вышло 8 платиновых альбомов. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
     categories: [1],
@@ -334,7 +336,7 @@ test(`API returns status code 404 when trying to change non-existent article`, a
     categories: [3],
     title: `Как собрать камни бесконечности.`,
     announce: `Как собрать камни бесконечности.`,
-    createdDate: `2021-02-22`,
+    createdDate: `2021-06-19 00:00:00+02`,
     userId: 1
   };
 
