@@ -29,14 +29,16 @@ const mockUsers = [
     lastName: `Иванов`,
     email: `ivanov@example.com`,
     passwordHash: passwordUtils.hashSync(`ivanov`),
-    avatar: `avatar-1.jpg`
+    avatar: `avatar-1.jpg`,
+    isAdmin: false,
   },
   {
     firstName: `Пётр`,
     lastName: `Петров`,
     email: `petrov@example.com`,
     passwordHash: passwordUtils.hashSync(`petrov`),
-    avatar: `avatar-2.jpg`
+    avatar: `avatar-2.jpg`,
+    isAdmin: false,
   }
 ];
 
