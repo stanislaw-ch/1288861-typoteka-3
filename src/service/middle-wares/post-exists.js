@@ -8,7 +8,7 @@ module.exports = (service) => async (req, res, next) => {
 
   if (!post) {
     return res.status(HttpCode.NOT_FOUND)
-      .send(`Offer with ${postId} not found`);
+      .send(`Post with ${postId} not found`);
   }
 
   res.locals.post = post;

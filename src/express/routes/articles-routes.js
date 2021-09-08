@@ -45,12 +45,8 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
 articlesRouter.get(`/add`, auth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   try {
-    if (user.isAdmin) {
-      const categories = await api.getCategories();
-      res.render(`admin/new-post`, {categories, user, csrfToken: req.csrfToken()});
-    } else {
-      res.redirect(`/`);
-    }
+    const categories = await api.getCategories();
+    res.render(`admin/new-post`, {categories, user, csrfToken: req.csrfToken()});
   } catch (error) {
     res.status(400).render(`errors/404`);
   }
@@ -60,7 +56,7 @@ articlesRouter.post(`/add`, auth, upload.single(`upload`), csrfProtection, async
   const {user} = req.session;
   const {body, file} = req;
   const postData = {
-    createdDate: body.date,
+    createdDate: new Date(body.date).toLocaleDateString(`ru-RU`),
     title: body.title,
     picture: file ? file.filename : ``,
     categories: ensureArray(body.category),
@@ -82,17 +78,12 @@ articlesRouter.get(`/edit/:id`, auth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   try {
-    if (user.isAdmin) {
-      const [post, categories] = await Promise.all([
-        api.getPost(id),
-        api.getCategories()
-      ]);
+    const [post, categories] = await Promise.all([
+      api.getPost(id),
+      api.getCategories()
+    ]);
 
-      console.log(post.categories);
-      res.render(`admin/new-post`, {id, post, categories, user, csrfToken: req.csrfToken()});
-    } else {
-      res.redirect(`/`);
-    }
+    res.render(`admin/new-post`, {id, post, categories, user, csrfToken: req.csrfToken()});
   } catch (error) {
     res.status(400).render(`errors/404`);
   }
@@ -103,7 +94,7 @@ articlesRouter.post(`/edit/:id`, auth, upload.single(`upload`), csrfProtection, 
   const {body, file} = req;
   const {id} = req.params;
   const postData = {
-    createdDate: body.date,
+    createdDate: new Date(body.date).toLocaleDateString(`ru-RU`),
     title: body.title,
     picture: file ? file.filename : body[`old-image`],
     categories: ensureArray(body.category),
@@ -132,13 +123,26 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   try {
     const post = await api.getPost(id, true);
     const categories = await api.getCategories(true);
-    res.render(`user/post`, {post, id, user, categories, previousPage, csrfToken: req.csrfToken()});
+    const sortCommentsByDate = post.comments.sort((a, b) => new Date(a.createdAt).getTime() > new Date(b.createdAt).getTime() ? -1 : 1);
+    res.render(`user/post`, {sortCommentsByDate, post, id, user, categories, previousPage, csrfToken: req.csrfToken()});
   } catch (error) {
     res.status(400).render(`errors/404`);
   }
 });
 
-articlesRouter.post(`/:id/comments`, auth, async (req, res) => {
+articlesRouter.post(`/:id`, auth, csrfProtection, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await api.deletePost(id);
+    res.redirect(`/my`);
+  } catch (error) {
+    res.status(400).render(`errors/404`);
+  }
+
+});
+
+articlesRouter.post(`/:id/comments`, auth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {message} = req.body;
@@ -150,7 +154,18 @@ articlesRouter.post(`/:id/comments`, auth, async (req, res) => {
     const errorMessages = errors.response.data.split(`\n`);
     const post = await api.getPost(id, true);
     const categories = await api.getCategories(true);
-    res.render(`user/post`, {post, id, user, categories, errorMessages});
+    res.render(`user/post`, {post, id, user, categories, errorMessages, csrfToken: req.csrfToken()});
+  }
+});
+
+
+articlesRouter.post(`/:id/comment/:commentId`, auth, csrfProtection, async (req, res) => {
+  const {id, commentId} = req.params;
+  try {
+    await api.deleteComment(id, commentId);
+    res.redirect(`/my/comments`);
+  } catch (error) {
+    res.status(400).render(`errors/404`);
   }
 });
 

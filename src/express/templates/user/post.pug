@@ -9,7 +9,7 @@ block content
         .post__wrapper
           .post__head
             a.post__backwards.button.button--backwards(href=(previousPage ? previousPage : '/')) Назад
-            time.post__date(datetime=`${post.createdDate}`) #{formatDate(post.createdDate)}
+            time.post__date(datetime=`${post.createdDate}`) #{formatPostDate(post.createdDate)}
             h2.post__title.title.title--main #{post.title}
             ul.post__themes.themes
               each postCategory in post.categories
@@ -24,12 +24,13 @@ block content
               img(src=`/img/${post.picture}` alt='пейзаж море, скалы, пляж')
           .post__text
             h3 #{post.title}
+            p #{post.announce}
             p #{post.fullText}
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments
           if post.comments.length
             h2.comments__title.title.title--middle Комментарии
-            each comment in post.comments
+            each comment in sortCommentsByDate
               ul.comments__list
                 li.comments__comment
                   .comments__avatar.avatar
@@ -37,7 +38,7 @@ block content
                   .comments__text
                     .comments__head
                       p #{comment.users.firstName} #{comment.users.lastName} •
-                      time.comments__date(datetime=`${comment.createdAt}`) #{formatDate(comment.createdAt)}
+                      time.comments__date(datetime=`${comment.createdAt}`) #{formatCommentDate(comment.createdAt)}
                     p.comments__message #{comment.text}
           if !post.comments.length
             h2.comments__title.title.title--middle Комментарии отсутствуют
@@ -45,6 +46,7 @@ block content
           if user
             .comments__footer.comments__footer--user
               form(action=`/articles/${id}/comments` enctype='application/x-www-form-urlencoded' method='POST')
+                input(type="hidden" name="_csrf" value=csrfToken)
                 .comments__avatar.avatar
                   img(src=`/img/${user.avatar}` alt='аватар пользователя')
                 label

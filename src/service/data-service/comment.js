@@ -23,11 +23,24 @@ class CommentService {
     return !!deletedRows;
   }
 
-  findAll(postId) {
-    return this._Comment.findAll({
-      where: {postId},
-      raw: true
-    });
+  async findAll(postId) {
+    const include = [Aliases.POSTS, Aliases.USERS];
+    if (postId) {
+      return await this._Comment.findAll({
+        where: {postId},
+        raw: true,
+        order: [
+          [`createdAt`, `DESC`]
+        ],
+      });
+    } else {
+      return await this._Comment.findAll({
+        order: [
+          [`createdAt`, `DESC`]
+        ],
+        include
+      });
+    }
   }
 
   async findRecent() {

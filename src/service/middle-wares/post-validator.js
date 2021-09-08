@@ -4,14 +4,18 @@ const Joi = require(`joi`).extend(require(`@joi/date`));
 const {HttpCode} = require(`../../constants`);
 
 const schema = Joi.object({
-  createdDate: Joi.date().format(`YYYY-MM-DD`).required(),
+  createdDate: Joi.date().required(),
+  // createdDate: Joi.date().format(`DD.MM.YYYY`).required(),
   title: Joi.string().min(30).max(250).required().messages({
     'string.empty': `"Заголовок" - не может быть пустым`,
     'string.min': `"Заголовок" - должен содержать минимум 30 символов`,
     'string.max': `"Заголовок" - должен содержать максимум 250 символов`,
     'any.required': `"Заголовок" - обязателен для заполнения`
   }),
-  picture: Joi.string().allow(null, ``),
+  picture: Joi.string().allow(null, ``).pattern(/^.*\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)
+        .messages({
+          'string.pattern.base': `Изображение должно быть в формате png или jpg`,
+        }),
   categories: Joi.array().items(
       Joi.number().integer().positive()
   ).min(1).required().messages({
@@ -24,7 +28,6 @@ const schema = Joi.object({
     'any.required': `"Анонс публикации" - обязателен для заполнения`
   }),
   fullText: Joi.string().min(30).max(1000).allow(null, ``).messages({
-    'string.min': `"Полный текст публикации" - должен содержать минимум 30 символов`,
     'string.max': `"Полный текст публикации" - должен содержать максимум 1000 символов`,
   }),
   userId: Joi.number().integer().positive().required(),

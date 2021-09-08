@@ -16,7 +16,17 @@
     }
   }
 
-  const formatDate = (dateString) => {
+  const formatPostDate = (dateString) => {
+    const date = new Date(dateString).toLocaleDateString(`ru-RU`);
+    const options = {
+      day: `numeric`,
+      month: `numeric`,
+      year: `numeric`,
+    };
+    return date.toLocaleString(`ru-RU`, options);
+  }
+
+  const formatCommentDate = (dateString) => {
     const date = new Date(dateString);
     const options = {
       day: `numeric`,
@@ -45,15 +55,16 @@ mixin pagination(page, totalPages, width, prefix)
     }
     let i = start - 1
 
-  .preview__toggle-wrapper
-    ul.preview__pagination.pagination
-      li
-        a.pagination__button.button.button--backwards(class={'button--disabled': page === start} href=`${prefix}page=${page - 1}`) Назад
-      while i++ < end
-        li.pagination__item(class={'pagination__item--active': i === page})
-          a(href=`${prefix}page=${i}`)= i
-      li
-        a.pagination__button.button.button--forward(class={'button--disabled': page === end} href=`${prefix}page=${page + 1}`) Вперёд
+  if totalPages > 1
+    .preview__toggle-wrapper
+      ul.preview__pagination.pagination
+        li
+          a.pagination__button.button.button--backwards(class={'button--disabled': page === start} href=`${prefix}page=${page - 1}`) Назад
+        while i++ < end
+          li.pagination__item(class={'pagination__item--active': i === page})
+            a(href=`${prefix}page=${i}`)= i
+        li
+          a.pagination__button.button.button--forward(class={'button--disabled': page === end} href=`${prefix}page=${page + 1}`) Вперёд
 
 mixin errorCommentMessage(message)
     if message

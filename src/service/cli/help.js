@@ -7,11 +7,13 @@ module.exports = {
     const text = `
     Программа запускает http-сервер и формирует файл с данными для API.
     Гайд:
-      server <command>
+      npm run start-back-server -- <command>
       Команды:
+      --server:             запускает сервер
       --version:            выводит номер версии
       --help:               печатает этот текст
-      --generate <count>    формирует файл mocks.json
+      --filldb <count>      наполняет базу данных моковыми значениями
+      --cleardb             очищает базу от моковых данных
     `;
     console.log(chalk.gray(text));
   }

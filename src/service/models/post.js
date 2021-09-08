@@ -20,8 +20,8 @@ const define = (sequelize) => Post.init({
   },
   createdDate: {
     type: DataTypes.DATE,
-    allowNull: false
-  }
+    allowNull: false,
+  },
 }, {
   sequelize,
   modelName: `Post`,

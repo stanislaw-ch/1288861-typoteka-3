@@ -7,5 +7,9 @@ module.exports = (req, res, next) => {
   if (!user) {
     return res.redirect(`/login`);
   }
+
+  if (user && !user.isAdmin) {
+    return res.redirect(`/`);
+  }
   return next();
 };

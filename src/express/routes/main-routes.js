@@ -5,6 +5,9 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api`).getAPI();
 const upload = require(`../middle-wares/upload`);
+const auth = require(`../middle-wares/auth`);
+const csrf = require(`csurf`);
+const csrfProtection = csrf();
 
 const POSTS_PER_PAGE = 8;
 
@@ -28,16 +31,15 @@ mainRouter.get(`/`, async (req, res) => {
   ]);
 
   const totalPages = Math.ceil(count / POSTS_PER_PAGE);
-
   res.render(`main`, {posts, categories, page, totalPages, postInTrends, commentsInTrends, user});
 });
 
-mainRouter.get(`/register`, (req, res) => {
+mainRouter.get(`/register`, csrfProtection, (req, res) => {
   const {user} = req.session;
-  res.render(`user/sign-up`, {user});
+  res.render(`user/sign-up`, {user, csrfToken: req.csrfToken()});
 });
 
-mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
+mainRouter.post(`/register`, upload.single(`upload`), csrfProtection, async (req, res) => {
   const {body, file} = req;
   const userData = {
     avatar: file ? file.filename : ``,
@@ -54,33 +56,33 @@ mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
   } catch (errors) {
     const errorMessages = errors.response.data.split(`\n`);
     const {user} = req.session;
-    res.render(`user/sign-up`, {errorMessages, user});
+    res.render(`user/sign-up`, {errorMessages, user, csrfToken: req.csrfToken()});
   }
 });
 
-mainRouter.get(`/login`, (req, res) => {
+mainRouter.get(`/login`, csrfProtection, (req, res) => {
   const {user} = req.session;
-  res.render(`user/login`, {user});
+  res.render(`user/login`, {user, csrfToken: req.csrfToken()});
 });
 
-mainRouter.post(`/login`, async (req, res) => {
+mainRouter.post(`/login`, csrfProtection, async (req, res) => {
   try {
     const user = await api.auth(req.body.email, req.body.password);
     req.session.user = user;
-    res.redirect(`/`);
+    res.redirect(`/?_cache=timestamp`);
   } catch (errors) {
     const errorMessages = errors.response.data.split(`\n`);
     const {user} = req.session;
-    res.render(`user/login`, {user, errorMessages});
+    res.render(`user/login`, {user, errorMessages, csrfToken: req.csrfToken()});
   }
 });
 
 mainRouter.get(`/logout`, (req, res) => {
   delete req.session.user;
-  res.redirect(`/`);
+  res.redirect(`/?_cache=timestamp`);
 });
 
-mainRouter.get(`/search`, async (req, res) => {
+mainRouter.get(`/search`, csrfProtection, async (req, res) => {
   const {user} = req.session;
 
   try {
@@ -90,6 +92,7 @@ mainRouter.get(`/search`, async (req, res) => {
     if (search === undefined) {
       res.render(`user/search`, {
         user,
+        csrfToken: req.csrfToken()
       });
       return;
     }
@@ -97,23 +100,64 @@ mainRouter.get(`/search`, async (req, res) => {
     res.render(`user/search`, {
       results,
       user,
+      csrfToken: req.csrfToken()
     });
   } catch (error) {
     res.render(`user/search`, {
       results: [],
       user,
+      csrfToken: req.csrfToken()
     });
   }
 });
 
-mainRouter.get(`/categories`, async (req, res) => {
+mainRouter.get(`/categories`, auth, csrfProtection, async (req, res) => {
   const {user} = req.session;
 
-  if (user.isAdmin) {
+  const categories = await api.getCategories();
+  res.render(`admin/all-categories`, {categories, user, csrfToken: req.csrfToken()});
+});
+
+mainRouter.post(`/categories/add`, auth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const {category} = req.body;
+
+  try {
+    await api.createCategory({name: category});
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const errorMessages = errors.response.data.split(`\n`);
     const categories = await api.getCategories();
-    res.render(`admin/all-categories`, {categories, user});
-  } else {
-    res.redirect(`/`);
+    res.render(`admin/all-categories`, {categories, user, errorMessages, csrfToken: req.csrfToken()});
+  }
+});
+
+mainRouter.post(`/categories/:id/update`, auth, csrfProtection, async (req, res) => {
+  const {id} = req.params;
+  const {user} = req.session;
+  const {category} = req.body;
+
+  try {
+    await api.updateCategory(id, {name: category});
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const errorMessages = errors.response.data.split(`\n`);
+    const categories = await api.getCategories();
+    res.render(`admin/all-categories`, {categories, user, errorMessages, csrfToken: req.csrfToken()});
+  }
+});
+
+mainRouter.get(`/categories/:id/delete`, auth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const {id} = req.params;
+
+  try {
+    await api.deleteCategory(id);
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const errorMessages = errors.response.data.split(`\n`);
+    const categories = await api.getCategories();
+    res.render(`admin/all-categories`, {categories, user, errorMessages, csrfToken: req.csrfToken()});
   }
 });
 

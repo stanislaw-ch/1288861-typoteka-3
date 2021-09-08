@@ -4,15 +4,16 @@ block content
   main.main-page.main-page--padding
   section.main-page__publication.publication
     h1.publication__title Комментарии
-    each post in posts
-      each comment in post.comments
-        ul.publication__list
-          li.publication__list-item
-            .publication__header
-              img.publication__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
-              b.publication__list-name #{comment.users.firstName} #{comment.users.lastName}
-              time.publication__item-time(datetime=`${comment.createdAt}`) #{formatDate(comment.createdAt)}
-            a.publication__item-text(href=`/articles/${post.id}`) #{comment.text}
-            p.publication__text-strong #{post.title}
-            button.publication__button.button.button--close-item(type='button')
+    each comment in comments
+      ul.publication__list
+        li.publication__list-item
+          .publication__header
+            img.publication__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
+            b.publication__list-name #{comment.users.firstName} #{comment.users.lastName}
+            time.publication__item-time(datetime=`${comment.createdAt}`) #{formatCommentDate(comment.createdAt)}
+          a.publication__item-text(href=`/articles/${comment.postId}`) #{comment.text}
+          p.publication__text-strong #{comment.posts.title}
+          form(action=(`/articles/${comment.postId}/comment/${comment.id}`) method='POST' enctype='application/x-www-form-urlencoded')
+            input(type="hidden" name="_csrf" value=csrfToken)
+            button.publication__button.button.button--close-item(type='submit')
               span.visually-hidden Закрыть строку списка

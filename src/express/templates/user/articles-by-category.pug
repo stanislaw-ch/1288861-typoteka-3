@@ -8,9 +8,10 @@ block content
 
       ul.themes
         each category in categories
-          li.themes__item
-            a(class=category.id==id ? 'themes__item-link themes__item-link--active' : 'themes__item-link' href=`/articles/category/${category.id}`) #{category.name} !{' '}
-              sup #{category.count}
+          if category.count > 0
+            li.themes__item
+              a(class=category.id==id ? 'themes__item-link themes__item-link--active' : 'themes__item-link' href=`/articles/category/${category.id}`) #{category.name} !{' '}
+                sup #{category.count}
 
     section.main-page__list.preview
       h2.visually-hidden Список превью статей
@@ -24,7 +25,7 @@ block content
             if (post.picture)
               .preview__background
                 img.preview__background-image(src=`/img/${post.picture}` width='460' height='240' alt='Фотография небоскреба')
-            time.preview__time(datetime=`${post.createdAt}`) #{formatDate(post.createdAt)}
+            time.preview__time(datetime=`${post.createdDate}`) #{formatPostDate(post.createdDate)}
             h3.preview__name
               a.preview__name-link(href=`/articles/${post.id}`) #{post.title}
             p.preview__text #{post.announce}

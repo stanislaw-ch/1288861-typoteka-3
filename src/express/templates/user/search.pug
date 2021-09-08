@@ -6,7 +6,8 @@ block content
       .search-page__wrapper
         h1 Поиск
         .search.search-page__form
-          form(action='' method='get')
+          form(action='' method='GET' enctype='application/x-www-form-urlencoded')
+            input(type="hidden" name="_csrf" value=csrfToken)
             label
               input(type='text' name='search' placeholder='Что ищем?')
             button.search__button.button.button--transparent(type='submit') Найти
@@ -14,8 +15,8 @@ block content
           if results.length
             each result in results
               .search__result
-                time.search__date(datetime='2019-03-21T20:33') #{result.createdDate}
-                a.search__link
+                time.search__date(datetime=`${result.createdDate}`) #{formatPostDate(result.createdDate)}
+                a.search__link(href=`/articles/${result.id}`)
                   | #{result.title}
           else
             p.search-page__empty Ничего не нашлось

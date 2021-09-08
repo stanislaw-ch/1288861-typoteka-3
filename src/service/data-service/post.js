@@ -8,6 +8,7 @@ class PostService {
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
     this._User = sequelize.models.User;
+    this._PostCategory = sequelize.models.PostCategory;
   }
 
   async create(postData) {
@@ -19,6 +20,9 @@ class PostService {
   async drop(id) {
     const deletedRows = await this._Post.destroy({
       where: {id}
+    });
+    await this._Comment.destroy({
+      where: {postId: id}
     });
     return !!deletedRows;
   }
@@ -46,10 +50,14 @@ class PostService {
               exclude: [`passwordHash`]
             }
           }
-        ]
+        ],
       });
     }
-    const posts = await this._Post.findAll({include});
+    const posts = await this._Post.findAll({
+      include,
+      order: [
+        [`createdDate`, `DESC`]
+      ]});
     return posts.map((item) => item.get());
   }
 
@@ -88,6 +96,7 @@ class PostService {
       offset,
       include: [
         Aliases.CATEGORIES,
+        Aliases.COMMENTS,
         {
           model: this._User,
           as: Aliases.USERS,
@@ -96,16 +105,20 @@ class PostService {
           }
         }
       ],
-      distinct: true
+      distinct: true,
+      order: [
+        [`createdDate`, `DESC`]
+      ]
     });
     return {count, posts: rows};
   }
 
   async update(id, post) {
-    const [affectedRows] = await this._Post.update(post, {
-      where: {id}
-    });
-    return !!affectedRows;
+    await this._Post.update(post, {where: {id}});
+    const categoriesIds = post.categories.map((categoryId) => +categoryId);
+    const updatedPost = await this.findOne(id);
+    await updatedPost.setCategories(categoriesIds);
+    return updatedPost.get();
   }
 
   async findPopular() {

@@ -18,7 +18,7 @@ class CategoryService {
           [
             Sequelize.fn(
                 `COUNT`,
-                `*`
+                Sequelize.col(`PostId`)
             ),
             `count`
           ]
@@ -34,6 +34,39 @@ class CategoryService {
     } else {
       return this._Category.findAll({raw: true});
     }
+  }
+
+  async countByCategory(id) {
+    const result = await this._PostCategory.findAll({
+      where: {CategoryId: id}
+    });
+    const count = result.map((it) => it.get()).length;
+    return +count;
+  }
+
+  async findByName(name) {
+    return await this._Category.findOne({where: {name}});
+  }
+
+  async create(data) {
+    return await this._Category.create({
+      name: data
+    });
+  }
+
+  async update(id, name) {
+    return await this._Category.update(
+        {name},
+        {where: {id}}
+    );
+  }
+
+  async drop(id) {
+    const deletedRows = await this._Category.destroy({
+      where: {id}
+    });
+
+    return !!deletedRows;
   }
 }
 

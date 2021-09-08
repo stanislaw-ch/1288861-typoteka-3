@@ -38,7 +38,7 @@ const generateComments = (count, comments, users) => (
 
 const getRandomSubarray = (items) => {
   items = items.slice();
-  let count = getRandomInt(1, items.length - 4);
+  let count = getRandomInt(1, items.length - 5);
   const result = [];
   while (count--) {
     result.push(
@@ -65,8 +65,8 @@ const generatePosts = (count, titles, categories, sentences, comments, users) =>
     user: users[getRandomInt(0, users.length - 1)].email,
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(),
-    announce: shuffle(sentences).slice(1, 5).join(` `),
-    fullText: shuffle(sentences).slice(1, sentences.length).join(` `),
+    announce: shuffle(sentences).slice(1, 5).slice(0, 250).join(` `),
+    fullText: shuffle(sentences).slice(1, sentences.length).slice(0, 1000).join(` `),
     categories: getRandomSubarray(categories),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments, users),
     picture: getPictureFileName(),

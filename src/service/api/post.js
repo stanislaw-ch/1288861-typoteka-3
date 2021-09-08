@@ -10,6 +10,17 @@ module.exports = (app, postService, commentService) => {
   const route = new Router();
   app.use(`/articles`, route);
 
+  route.get(`/my/comments`, async (req, res) => {
+    try {
+      const comments = await commentService.findAll(false);
+      return res.status(HttpCode.OK).json(comments);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
+
+
+  });
+
   route.get(`/`, async (req, res) => {
     try {
       const {offset, limit} = req.query;
@@ -84,8 +95,12 @@ module.exports = (app, postService, commentService) => {
         return res.status(HttpCode.NOT_FOUND)
           .send(`Not found with ${postId}`);
       }
+
+      const updatedPost = postService.update(postId, req.body);
+
       return res.status(HttpCode.OK)
-        .send(`Updated`);
+        .send(updatedPost);
+
     } catch (e) {
       return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }

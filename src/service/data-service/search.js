@@ -26,6 +26,9 @@ class SearchService {
           }
         }
       ],
+      order: [
+        [`createdDate`, `DESC`]
+      ]
     });
     return posts.map((post) => post.get());
   }
