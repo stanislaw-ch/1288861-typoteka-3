@@ -78,7 +78,7 @@ mainRouter.post(`/login`, csrfProtection, async (req, res) => {
 });
 
 mainRouter.get(`/logout`, (req, res) => {
-  delete req.session.user;
+  delete req.session.destroy();
   res.redirect(`/?_cache=timestamp`);
 });
 
