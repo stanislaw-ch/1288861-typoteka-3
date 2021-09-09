@@ -55,7 +55,6 @@ const mockPosts = [
       "Деревья",
       "Кино",
       "За жизнь",
-      "Разное",
       "Без рамки",
       "IT"
     ],
@@ -84,7 +83,6 @@ const mockPosts = [
     "announce": "Как начать действовать? Для начала просто соберитесь. Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Достичь успеха помогут ежедневные повторения. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем.",
     "fullText": "Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Простые ежедневные упражнения помогут достичь успеха. Собрать камни бесконечности легко, если вы прирожденный герой. Это один из лучших рок-музыкантов. Золотое сечение — соотношение двух величин, гармоническая пропорция. Ёлки — это не просто красивое дерево. Это прочная древесина. Первая большая ёлка была установлена только в 1938 году. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Из под его пера вышло 8 платиновых альбомов. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Достичь успеха помогут ежедневные повторения. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Программировать не настолько сложно, как об этом говорят. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Как начать действовать? Для начала просто соберитесь. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Он написал больше 30 хитов.",
     "categories": [
-      "Разное",
       "За жизнь"
     ],
     "comments": [
@@ -126,7 +124,6 @@ const mockPosts = [
     "fullText": "Золотое сечение — соотношение двух величин, гармоническая пропорция. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Первая большая ёлка была установлена только в 1938 году. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Собрать камни бесконечности легко, если вы прирожденный герой. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Простые ежедневные упражнения помогут достичь успеха. Достичь успеха помогут ежедневные повторения. Программировать не настолько сложно, как об этом говорят. Этот смартфон — настоящая находка. Большой и яркий экран мощнейший процессор — всё это в небольшом гаджете. Ёлки — это не просто красивое дерево. Это прочная древесина. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Он написал больше 30 хитов. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Из под его пера вышло 8 платиновых альбомов. Это один из лучших рок-музыкантов. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Как начать действовать? Для начала просто соберитесь.",
     "categories": [
       "За жизнь",
-      "Разное",
       "Кино",
       "Деревья",
       "IT",
@@ -158,7 +155,6 @@ const mockPosts = [
       "Программирование",
       "Деревья",
       "IT",
-      "Разное",
       "Без рамки",
       "За жизнь"
     ],
@@ -203,5 +199,112 @@ describe(`API returns category list`, () => {
           expect.arrayContaining([`Железо`, `Деревья`, `Кино`, `За жизнь`, `Разное`, `Без рамки`, `IT`, `Музыка`, `Программирование`])
       )
   );
+});
 
+describe(`API creates a new category if data is valid`, () => {
+  const newCategory = {
+    name: `correct category name`
+  };
+
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .post(`/categories/add`)
+      .send(newCategory);
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`Categories count is changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body.length).toBe(10))
+  );
+});
+
+describe(`API refuses to create a new category if data is invalid`, () => {
+  const newCategory = {
+    name: `Дом`
+  };
+
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .post(`/categories/add`)
+      .send(newCategory);
+  });
+
+  test(`Status code 400 if category name is too short`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+});
+
+describe(`API correctly changes category name`, () => {
+  const newCategory = {
+    name: `Новая категория`
+  };
+
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .put(`/categories/1/update`)
+      .send(newCategory);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Category name changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body[0].name).toBe(`Новая категория`))
+  );
+});
+
+describe(`API refuses to change category name if data is invalid`, () => {
+  const newCategory = {
+    name: `Слишком длинное название для категории`
+  };
+
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .put(`/categories/1/update`)
+      .send(newCategory);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+
+  test(`Category name doesn't changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body[0].name).toBe(`Новая категория`))
+  );
+});
+
+describe(`API correctly deletes a category`, () => {
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .delete(`/categories/5/delete`);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`Categories count is changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body.length).toBe(9))
+  );
+});
+
+describe(`API refuses to delete a non-empty category`, () => {
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .delete(`/categories/3/delete`);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+  test(`Categories count is not changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body.length).toBe(9))
+  );
 });
