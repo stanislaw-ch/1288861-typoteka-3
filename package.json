@@ -9,6 +9,7 @@
     "start-back-server": "cross-env LOG_LEVEL=error node -r dotenv/config ./src/service/service.js",
     "start-back-server::debug": "cross-env LOG_LEVEL=info NODE_ENV=development node -r dotenv/config ./src/service/service.js",
     "start-front-server": "node -r dotenv/config ./src/express/express.js",
+    "cli": "cross-env LOG_LEVEL=error node -r dotenv/config ./src/service/service.js --",
     "test": "npm run eslint && npm run jest",
     "jest": "jest",
     "eslint": "eslint --ext .js src/"
@@ -51,6 +52,7 @@
     "pg": "8.6.0",
     "pino": "6.11.3",
     "pug": "2.0.4",
-    "sequelize": "6.6.2"
+    "sequelize": "6.6.2",
+    "socket.io": "4.2.0"
   }
 }

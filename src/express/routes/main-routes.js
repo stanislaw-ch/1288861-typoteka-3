@@ -124,6 +124,7 @@ mainRouter.post(`/categories/add`, auth, csrfProtection, async (req, res) => {
 
   try {
     await api.createCategory({name: category});
+
     res.redirect(`/categories`);
   } catch (errors) {
     const errorMessages = errors.response.data.split(`\n`);
