@@ -3,6 +3,7 @@
 const express = require(`express`);
 const session = require(`express-session`);
 const path = require(`path`);
+const chalk = require(`chalk`);
 
 const articlesRoutes = require(`./routes/articles-routes`);
 const myRoutes = require(`./routes/my-routes`);
@@ -10,6 +11,7 @@ const mainRoutes = require(`./routes/main-routes`);
 const {HttpCode} = require(`../constants`);
 const getSequelize = require(`../service/lib/sequelize`);
 const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
+const {Server} = require(`socket.io`);
 
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
@@ -21,6 +23,12 @@ if (!SESSION_SECRET) {
 }
 
 const app = express();
+
+const http = require(`http`);
+const server = http.createServer(app);
+const io = new Server(server);
+
+app.locals.io = io;
 
 const mySessionStore = new SequelizeStore({
   db: getSequelize(),
@@ -53,4 +61,16 @@ app.use((err, _req, res, _next) => res.status(HttpCode.INTERNAL_SERVER_ERROR).re
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
-app.listen(process.env.PORT || DEFAULT_PORT);
+io.on(`connection`, (socket) => {
+  socket.on(`message`, (data) => {
+    socket.broadcast.emit(`message`, data);
+  });
+});
+
+server.listen(process.env.PORT || DEFAULT_PORT)
+  .on(`listening`, () => {
+    return console.info(chalk.green(`Ожидаю соединений на ${DEFAULT_PORT}`));
+  })
+  .on(`error`, (err) => {
+    return console.error(`Ошибка при создании сервера`, err);
+  });

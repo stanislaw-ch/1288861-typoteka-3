@@ -27,9 +27,6 @@ module.exports = (app, service) => {
       const {name} = req.body;
       const category = await service.create(name);
 
-      const io = req.app.locals.socketio;
-      io.emit(`category:create`, category);
-
       return res.status(HttpCode.OK)
         .json(category);
     } catch (e) {
