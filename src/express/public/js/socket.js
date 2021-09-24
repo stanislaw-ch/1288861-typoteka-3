@@ -2,6 +2,7 @@
 
 const socket = io();
 
-socket.addEventListener(`message`, async (message) => {
+socket.on(`message`, async (message) => {
   console.log(message);
 });
+

@@ -26,9 +26,15 @@ const app = express();
 
 const http = require(`http`);
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {serveClient: true});
 
-app.locals.io = io;
+const socketObject = {
+  emit(action, data) {
+    io.sockets.emit(action, data);
+  },
+};
+
+app.set(`socketio`, socketObject);
 
 const mySessionStore = new SequelizeStore({
   db: getSequelize(),
@@ -61,11 +67,11 @@ app.use((err, _req, res, _next) => res.status(HttpCode.INTERNAL_SERVER_ERROR).re
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
-io.on(`connection`, (socket) => {
-  socket.on(`message`, (data) => {
-    socket.broadcast.emit(`message`, data);
-  });
-});
+// io.on(`connection`, (socket) => {
+//   // socket.on(`message`, (data) => {
+//     socketObject.emit(`message`, data);
+//   // });
+// });
 
 server.listen(process.env.PORT || DEFAULT_PORT)
   .on(`listening`, () => {

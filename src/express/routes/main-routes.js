@@ -112,14 +112,12 @@ mainRouter.get(`/search`, csrfProtection, async (req, res) => {
 });
 
 const getSocket = async (req) => {
-  const {io} = req.app.locals;
-  return io.emit(`message`, `category`);
+  const io = req.app.get(`socketio`);
+  io.emit(`message`, `category`);
 };
 
 mainRouter.get(`/categories`, auth, csrfProtection, async (req, res) => {
   const {user} = req.session;
-
-  getSocket(req);
 
   const categories = await api.getCategories();
   res.render(`admin/all-categories`, {categories, user, csrfToken: req.csrfToken()});
@@ -147,8 +145,6 @@ mainRouter.post(`/categories/:id/update`, auth, csrfProtection, async (req, res)
   const {user} = req.session;
   const {category} = req.body;
 
-  getSocket(req);
-
   try {
     await api.updateCategory(id, {name: category});
     res.redirect(`/categories`);
@@ -162,8 +158,6 @@ mainRouter.post(`/categories/:id/update`, auth, csrfProtection, async (req, res)
 mainRouter.get(`/categories/:id/delete`, auth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
-
-  getSocket(req);
 
   try {
     await api.deleteCategory(id);
