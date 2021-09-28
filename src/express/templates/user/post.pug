@@ -34,7 +34,8 @@ block content
               ul.comments__list
                 li.comments__comment
                   .comments__avatar.avatar
-                    img(src=`/img/${comment.users.avatar}` alt='аватар пользователя')
+                    if comment.users.avatar
+                      img(src=`/img/${comment.users.avatar}` alt='аватар пользователя')
                   .comments__text
                     .comments__head
                       p #{comment.users.firstName} #{comment.users.lastName} •
@@ -48,7 +49,8 @@ block content
               form(action=`/articles/${id}/comments` enctype='application/x-www-form-urlencoded' method='POST')
                 input(type="hidden" name="_csrf" value=csrfToken)
                 .comments__avatar.avatar
-                  img(src=`/img/${user.avatar}` alt='аватар пользователя')
+                  if user.avatar
+                    img(src=`/img/${user.avatar}` alt='аватар пользователя')
                 label
                   textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
                 button.comments__button.button.button--colored(type='submit') Опубликовать

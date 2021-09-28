@@ -3,12 +3,12 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const auth = require(`../middle-wares/auth`);
+const isAdmin = require(`../middle-wares/isAdmin`);
 const api = require(`../api`).getAPI();
 const myRouter = new Router();
 const csrfProtection = csrf();
 
-myRouter.use(auth);
+myRouter.use(isAdmin);
 
 myRouter.get(`/`, csrfProtection, async (req, res) => {
   const {user} = req.session;

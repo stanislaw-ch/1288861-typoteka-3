@@ -18,7 +18,8 @@ header.header
         li.header__list-item
           a.header__exit(href='/logout') Выйти
     a.header__avatar.avatar
-      img(src=`/img/${user.avatar}` alt='аватар пользователя')
+      if user.avatar
+        img(src=`/img/${user.avatar}` alt='аватар пользователя')
 
   if user && user.isAdmin
     a(href='/articles/add')

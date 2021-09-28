@@ -5,6 +5,7 @@ const csrf = require(`csurf`);
 
 const upload = require(`../middle-wares/upload`);
 const auth = require(`../middle-wares/auth`);
+const isAdmin = require(`../middle-wares/isAdmin`);
 const {ensureArray} = require(`../../utils`);
 
 const api = require(`../api`).getAPI();
@@ -42,7 +43,7 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   }
 });
 
-articlesRouter.get(`/add`, auth, csrfProtection, async (req, res) => {
+articlesRouter.get(`/add`, isAdmin, csrfProtection, async (req, res) => {
   const {user} = req.session;
   try {
     const categories = await api.getCategories();
@@ -52,7 +53,7 @@ articlesRouter.get(`/add`, auth, csrfProtection, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/add`, auth, upload.single(`upload`), csrfProtection, async (req, res) => {
+articlesRouter.post(`/add`, isAdmin, upload.single(`upload`), csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {body, file} = req;
   const postData = {
@@ -74,7 +75,7 @@ articlesRouter.post(`/add`, auth, upload.single(`upload`), csrfProtection, async
   }
 });
 
-articlesRouter.get(`/edit/:id`, auth, csrfProtection, async (req, res) => {
+articlesRouter.get(`/edit/:id`, isAdmin, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   try {
@@ -89,7 +90,7 @@ articlesRouter.get(`/edit/:id`, auth, csrfProtection, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/edit/:id`, auth, upload.single(`upload`), csrfProtection, async (req, res) => {
+articlesRouter.post(`/edit/:id`, isAdmin, upload.single(`upload`), csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {body, file} = req;
   const {id} = req.params;
@@ -130,7 +131,7 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/:id`, auth, csrfProtection, async (req, res) => {
+articlesRouter.post(`/:id`, isAdmin, csrfProtection, async (req, res) => {
   const {id} = req.params;
 
   try {
@@ -142,6 +143,15 @@ articlesRouter.post(`/:id`, auth, csrfProtection, async (req, res) => {
 
 });
 
+const onChange = async (req) => {
+  const io = req.app.get(`socketio`);
+  const [posts, comments] = await Promise.all([
+    api.getPopularPosts(),
+    api.getRecentComments()
+  ]);
+  io.emit(`comment`, {posts, comments});
+};
+
 articlesRouter.post(`/:id/comments`, auth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
@@ -150,6 +160,7 @@ articlesRouter.post(`/:id/comments`, auth, csrfProtection, async (req, res) => {
   try {
     await api.createComment(id, {userId: user.id, text: message});
     res.redirect(`/articles/${id}`);
+    onChange(req);
   } catch (errors) {
     const errorMessages = errors.response.data.split(`\n`);
     const post = await api.getPost(id, true);
@@ -159,10 +170,11 @@ articlesRouter.post(`/:id/comments`, auth, csrfProtection, async (req, res) => {
 });
 
 
-articlesRouter.post(`/:id/comment/:commentId`, auth, csrfProtection, async (req, res) => {
+articlesRouter.post(`/:id/comment/:commentId`, isAdmin, csrfProtection, async (req, res) => {
   const {id, commentId} = req.params;
   try {
     await api.deleteComment(id, commentId);
+    onChange(req);
     res.redirect(`/my/comments`);
   } catch (error) {
     res.status(400).render(`errors/404`);

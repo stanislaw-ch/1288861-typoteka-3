@@ -29,7 +29,10 @@ const schema = Joi.object({
     'string.min': `"Повтор пароля" - должен содержать минимум 6 символов`,
     'any.only': `"Повтор пароля" - не совпадает с уже введенным поролем`
   }),
-  avatar: Joi.string().allow(null, ``),
+  avatar: Joi.string().allow(null, ``).pattern(/^.*\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)
+        .messages({
+          'string.pattern.base': `Изображение должно быть в формате png или jpg`,
+        }),
   isAdmin: Joi.boolean(),
 });
 

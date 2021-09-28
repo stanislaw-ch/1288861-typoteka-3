@@ -18,6 +18,7 @@ module.exports = (app, service) => {
   route.post(`/`, userValidator(service), async (req, res) => {
     try {
       const data = req.body;
+      console.log(`🚀 ~ file: user.js ~ line 21 ~ route.post ~ data`, data);
 
       data.passwordHash = await passwordUtils.hash(data.password);
 

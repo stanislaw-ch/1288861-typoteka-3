@@ -67,12 +67,6 @@ app.use((err, _req, res, _next) => res.status(HttpCode.INTERNAL_SERVER_ERROR).re
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
-// io.on(`connection`, (socket) => {
-//   // socket.on(`message`, (data) => {
-//     socketObject.emit(`message`, data);
-//   // });
-// });
-
 server.listen(process.env.PORT || DEFAULT_PORT)
   .on(`listening`, () => {
     return console.info(chalk.green(`Ожидаю соединений на ${DEFAULT_PORT}`));

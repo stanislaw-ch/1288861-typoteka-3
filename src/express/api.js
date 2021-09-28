@@ -29,7 +29,7 @@ class API {
     return this._load(`/articles/${id}`, {params: {comments}});
   }
 
-  getPopularArticles() {
+  getPopularPosts() {
     return this._load(`/articles/popular`);
   }
 
