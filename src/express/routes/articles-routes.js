@@ -6,7 +6,7 @@ const csrf = require(`csurf`);
 const upload = require(`../middle-wares/upload`);
 const auth = require(`../middle-wares/auth`);
 const isAdmin = require(`../middle-wares/isAdmin`);
-const {ensureArray} = require(`../../utils`);
+const {ensureArray, convertDate} = require(`../../utils`);
 
 const api = require(`../api`).getAPI();
 const articlesRouter = new Router();
@@ -56,8 +56,9 @@ articlesRouter.get(`/add`, isAdmin, csrfProtection, async (req, res) => {
 articlesRouter.post(`/add`, isAdmin, upload.single(`upload`), csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {body, file} = req;
+  const date = body.date;
   const postData = {
-    createdDate: new Date(body.date).toLocaleDateString(`ru-RU`),
+    createdDate: convertDate(date),
     title: body.title,
     picture: file ? file.filename : ``,
     categories: ensureArray(body.category),
@@ -94,8 +95,9 @@ articlesRouter.post(`/edit/:id`, isAdmin, upload.single(`upload`), csrfProtectio
   const {user} = req.session;
   const {body, file} = req;
   const {id} = req.params;
+  const date = body.date;
   const postData = {
-    createdDate: new Date(body.date).toLocaleDateString(`ru-RU`),
+    createdDate: convertDate(date),
     title: body.title,
     picture: file ? file.filename : body[`old-image`],
     categories: ensureArray(body.category),

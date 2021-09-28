@@ -5,7 +5,6 @@ const {HttpCode} = require(`../../constants`);
 
 const schema = Joi.object({
   createdDate: Joi.date().required(),
-  // createdDate: Joi.date().format(`DD.MM.YYYY`).required(),
   title: Joi.string().min(30).max(250).required().messages({
     'string.empty': `"Заголовок" - не может быть пустым`,
     'string.min': `"Заголовок" - должен содержать минимум 30 символов`,

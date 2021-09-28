@@ -7,7 +7,7 @@ module.exports = {
     const text = `
     Программа запускает http-сервер и формирует файл с данными для API.
     Гайд:
-      npm run cli <command>
+      npm run cli -- <command>
       Команды:
       --server:             запускает сервер
       --version:            выводит номер версии

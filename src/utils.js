@@ -22,4 +22,11 @@ module.exports = {
     return date;
   },
   ensureArray: (value) => Array.isArray(value) ? value : [value],
+  convertDate: (value) => {
+    const pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
+    const replaceDate = value.replace(pattern, `$3-$2-$1`);
+    const date = new Date(replaceDate).getTime();
+
+    return date;
+  },
 };

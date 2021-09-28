@@ -52,7 +52,7 @@ class API {
     });
   }
 
-  async editPost(id, data) {
+  editPost(id, data) {
     return this._load(`/articles/${id}`, {
       method: HttpMethod.PUT,
       data
@@ -90,21 +90,21 @@ class API {
     });
   }
 
-  async createCategory(data) {
+  createCategory(data) {
     return this._load(`/categories/add`, {
       method: HttpMethod.POST,
       data,
     });
   }
 
-  async updateCategory(id, data) {
+  updateCategory(id, data) {
     return this._load(`/categories/${id}/update`, {
       method: HttpMethod.PUT,
       data,
     });
   }
 
-  async deleteCategory(id) {
+  deleteCategory(id) {
     return this._load(`/categories/${id}/delete`, {
       method: HttpMethod.DELETE,
     });
