@@ -5,7 +5,7 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api`).getAPI();
 const upload = require(`../middle-wares/upload`);
-const isAdmin = require(`../middle-wares/isAdmin`);
+const isAdmin = require(`../middle-wares/admin`);
 const csrf = require(`csurf`);
 const csrfProtection = csrf();
 

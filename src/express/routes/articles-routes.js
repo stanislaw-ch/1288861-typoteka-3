@@ -5,7 +5,7 @@ const csrf = require(`csurf`);
 
 const upload = require(`../middle-wares/upload`);
 const auth = require(`../middle-wares/auth`);
-const isAdmin = require(`../middle-wares/isAdmin`);
+const isAdmin = require(`../middle-wares/admin`);
 const {ensureArray, convertDate} = require(`../../utils`);
 
 const api = require(`../api`).getAPI();

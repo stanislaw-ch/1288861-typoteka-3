@@ -3,7 +3,7 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const isAdmin = require(`../middle-wares/isAdmin`);
+const isAdmin = require(`../middle-wares/admin`);
 const api = require(`../api`).getAPI();
 const myRouter = new Router();
 const csrfProtection = csrf();
