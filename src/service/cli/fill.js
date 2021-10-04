@@ -7,15 +7,12 @@ const {
   shuffle,
   getRandomDate,
 } = require(`../../utils`);
+const {FILE_DATA_PATH} = require(`../../constants`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COMMENTS = 4;
 
 const FILE_NAME = `fill-db.sql`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const PublicationCount = {
   MIN: 1,
@@ -59,10 +56,10 @@ const generatePosts = (count, titles, categoryCount, userCount, sentences, comme
 module.exports = {
   name: `--fill`,
   async run(args) {
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const commentSentences = await readContent(FILE_COMMENTS_PATH);
+    const sentences = await readContent(FILE_DATA_PATH.SENTENCES);
+    const titles = await readContent(FILE_DATA_PATH.TITLES);
+    const categories = await readContent(FILE_DATA_PATH.CATEGORIES);
+    const commentSentences = await readContent(FILE_DATA_PATH.COMMENTS);
 
     const [count] = args;
     const countPost = Number.parseInt(count, 10) || DEFAULT_COUNT;

@@ -29,4 +29,10 @@ module.exports = {
     PUT: `PUT`,
     DELETE: `DELETE`
   },
+  FILE_DATA_PATH: {
+    SENTENCES: `./data/sentences.txt`,
+    TITLES: `./data/titles.txt`,
+    CATEGORIES: `./data/categories.txt`,
+    COMMENTS: `./data/comments.txt`
+  },
 };

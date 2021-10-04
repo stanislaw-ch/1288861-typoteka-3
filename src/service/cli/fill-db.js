@@ -1,7 +1,7 @@
 'use strict';
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
-const {MAX_COMMENTS} = require(`../../constants`);
+const {MAX_COMMENTS, FILE_DATA_PATH} = require(`../../constants`);
 const {getRandomInt, getRandomDate, shuffle} = require(`../../utils`);
 
 const getSequelize = require(`../lib/sequelize`);
@@ -12,10 +12,6 @@ const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
 
 const DEFAULT_COUNT = 1;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const pictureNames = [`sea`, `forest`, `skyscraper`, ``];
 
@@ -85,10 +81,10 @@ module.exports = {
     }
     logger.info(`Connection to database established`);
 
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const comments = await readContent(FILE_COMMENTS_PATH);
+    const sentences = await readContent(FILE_DATA_PATH.SENTENCES);
+    const titles = await readContent(FILE_DATA_PATH.TITLES);
+    const categories = await readContent(FILE_DATA_PATH.CATEGORIES);
+    const comments = await readContent(FILE_DATA_PATH.COMMENTS);
     const users = [
       {
         firstName: `Иван`,
