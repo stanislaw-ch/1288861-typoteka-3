@@ -26,11 +26,7 @@ module.exports = (app, postService, commentService) => {
       const {offset, limit} = req.query;
       let result;
 
-      if (limit || offset) {
-        result = await postService.findPage({limit, offset});
-      } else {
-        result = await postService.findAll(true);
-      }
+      result = (limit || offset) ? await postService.findPage({limit, offset}) : await postService.findAll(true);
 
       return res.status(HttpCode.OK).json(result);
     } catch (e) {

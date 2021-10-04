@@ -17,10 +17,7 @@ const pictureNames = [`sea`, `forest`, `skyscraper`, ``];
 
 const getPictureFileName = () => {
   const name = pictureNames[getRandomInt(0, pictureNames.length - 1)];
-  if (name === ``) {
-    return null;
-  }
-  return `${name}@1x.jpg`;
+  return name === `` ? null : `${name}@1x.jpg`;
 };
 
 const generateComments = (count, comments, users) => (
