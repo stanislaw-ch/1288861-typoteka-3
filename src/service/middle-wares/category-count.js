@@ -4,7 +4,7 @@ const {HttpCode} = require(`../../constants`);
 
 module.exports = (service) => async (req, res, next) => {
   const {id} = req.params;
-  let count = await service.countByCategory(id);
+  const count = await service.countByCategory(id);
 
   if (count > 0) {
     res.status(HttpCode.BAD_REQUEST)
