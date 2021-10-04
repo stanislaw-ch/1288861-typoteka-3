@@ -33,14 +33,13 @@ class CommentService {
           [`createdAt`, `DESC`]
         ],
       });
-    } else {
-      return await this._Comment.findAll({
-        order: [
-          [`createdAt`, `DESC`]
-        ],
-        include
-      });
     }
+    return await this._Comment.findAll({
+      order: [
+        [`createdAt`, `DESC`]
+      ],
+      include
+    });
   }
 
   async findRecent() {
