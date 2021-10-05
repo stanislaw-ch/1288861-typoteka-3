@@ -1,10 +1,10 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {HttpCode} = require(`../../constants`);
+const {HttpCode, VALIDATOR} = require(`../../constants`);
 
 const schema = Joi.object({
-  name: Joi.string().min(5).max(30).required().messages({
+  name: Joi.string().min(VALIDATOR.CATEGORY.MIN).max(VALIDATOR.CATEGORY.MAX).required().messages({
     'string.empty': `Название категории обязательно для заполнения!`,
     'string.min': `Название категории должено содержать минимум 5 символов!`,
     'string.max': `Название категории должено содержать максимум 30 символов!`,

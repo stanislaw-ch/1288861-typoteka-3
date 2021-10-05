@@ -1,11 +1,11 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {HttpCode} = require(`../../constants`);
+const {HttpCode, VALIDATOR} = require(`../../constants`);
 
 const schema = Joi.object({
-  postId: Joi.number().integer().min(1),
-  commentId: Joi.number().integer().min(1)
+  postId: Joi.number().integer().min(VALIDATOR.ROUTE.MIN),
+  commentId: Joi.number().integer().min(VALIDATOR.ROUTE.MIN)
 });
 
 module.exports = (req, res, next) => {

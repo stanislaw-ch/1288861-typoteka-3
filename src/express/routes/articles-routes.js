@@ -7,6 +7,7 @@ const upload = require(`../middle-wares/upload`);
 const auth = require(`../middle-wares/auth`);
 const isAdmin = require(`../middle-wares/admin`);
 const {ensureArray, convertDate} = require(`../../utils`);
+const {HttpCode} = require(`../../constants`);
 
 const api = require(`../api`).getAPI();
 const articlesRouter = new Router();
@@ -39,7 +40,7 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
     const postsByPage = postsInCategory.slice(offset, offset + limit);
     res.render(`user/articles-by-category`, {postsByPage, id, category, totalPages, page, categories, user});
   } catch (error) {
-    res.status(400).render(`errors/404`);
+    res.status(HttpCode.BAD_REQUEST).render(`errors/404`);
   }
 });
 
@@ -49,7 +50,7 @@ articlesRouter.get(`/add`, isAdmin, csrfProtection, async (req, res) => {
     const categories = await api.getCategories();
     res.render(`admin/new-post`, {categories, user, csrfToken: req.csrfToken()});
   } catch (error) {
-    res.status(400).render(`errors/404`);
+    res.status(HttpCode.BAD_REQUEST).render(`errors/404`);
   }
 });
 
@@ -87,7 +88,7 @@ articlesRouter.get(`/edit/:id`, isAdmin, csrfProtection, async (req, res) => {
 
     res.render(`admin/new-post`, {id, post, categories, user, csrfToken: req.csrfToken()});
   } catch (error) {
-    res.status(400).render(`errors/404`);
+    res.status(HttpCode.BAD_REQUEST).render(`errors/404`);
   }
 });
 
@@ -129,7 +130,7 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
     const sortCommentsByDate = post.comments.sort((a, b) => new Date(a.createdAt).getTime() > new Date(b.createdAt).getTime() ? -1 : 1);
     res.render(`user/post`, {sortCommentsByDate, post, id, user, categories, previousPage, csrfToken: req.csrfToken()});
   } catch (error) {
-    res.status(400).render(`errors/404`);
+    res.status(HttpCode.BAD_REQUEST).render(`errors/404`);
   }
 });
 
@@ -140,7 +141,7 @@ articlesRouter.post(`/:id`, isAdmin, csrfProtection, async (req, res) => {
     await api.deletePost(id);
     res.redirect(`/my`);
   } catch (error) {
-    res.status(400).render(`errors/404`);
+    res.status(HttpCode.BAD_REQUEST).render(`errors/404`);
   }
 
 });
@@ -179,7 +180,7 @@ articlesRouter.post(`/:id/comment/:commentId`, isAdmin, csrfProtection, async (r
     onChange(req);
     res.redirect(`/my/comments`);
   } catch (error) {
-    res.status(400).render(`errors/404`);
+    res.status(HttpCode.BAD_REQUEST).render(`errors/404`);
   }
 });
 

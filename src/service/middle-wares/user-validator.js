@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {HttpCode} = require(`../../constants`);
+const {HttpCode, VALIDATOR} = require(`../../constants`);
 
 const schema = Joi.object({
   email: Joi.string().email().required().messages({
@@ -19,7 +19,7 @@ const schema = Joi.object({
     'string.pattern.base': `"Фамилия" - Не должна содержать цифр и специальных символов`,
     'any.required': `"Фамилия" - обязателена для заполнения`
   }),
-  password: Joi.string().min(6).required().messages({
+  password: Joi.string().min(VALIDATOR.USER.MIN).required().messages({
     'string.empty': `"Пароль" - обязателен для заполнения`,
     'string.min': `"Пароль" - должен содержать минимум 6 символов`,
     'any.required': `"Пароль" - обязателен для заполнения`

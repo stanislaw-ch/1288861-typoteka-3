@@ -35,4 +35,24 @@ module.exports = {
     CATEGORIES: `./data/categories.txt`,
     COMMENTS: `./data/comments.txt`
   },
+  VALIDATOR: {
+    CATEGORY: {
+      MIN: 5,
+      MAX: 30,
+    },
+    COMMENT: {
+      MIN: 20,
+    },
+    USER: {
+      MIN: 6,
+    },
+    POST: {
+      MIN: 30,
+      MAX: 250,
+      MAX_FULL_TEXT: 1000,
+    },
+    ROUTE: {
+      MIN: 1,
+    },
+  },
 };

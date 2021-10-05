@@ -1,7 +1,7 @@
 'use strict';
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
-const {MAX_COMMENTS, FILE_DATA_PATH} = require(`../../constants`);
+const {MAX_COMMENTS, FILE_DATA_PATH, VALIDATOR} = require(`../../constants`);
 const {getRandomInt, getRandomDate, shuffle} = require(`../../utils`);
 
 const getSequelize = require(`../lib/sequelize`);
@@ -24,14 +24,14 @@ const generateComments = (count, comments, users) => (
   Array(count).fill({}).map(() => ({
     user: users[getRandomInt(0, users.length - 1)].email,
     text: shuffle(comments)
-      .slice(0, getRandomInt(1, 3))
+      .slice(0, getRandomInt(1, comments.length))
       .join(` `),
   }))
 );
 
-const getRandomSubarray = (items) => {
+const getRandomSubarray = (items, maxCount) => {
   items = items.slice();
-  let count = getRandomInt(1, items.length - 5);
+  let count = getRandomInt(1, items.length - maxCount);
   const result = [];
   while (count--) {
     result.push(
@@ -58,9 +58,9 @@ const generatePosts = (count, titles, categories, sentences, comments, users) =>
     user: users[getRandomInt(0, users.length - 1)].email,
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(),
-    announce: shuffle(sentences).slice(1, 5).slice(0, 250).join(` `),
-    fullText: shuffle(sentences).slice(1, sentences.length).slice(0, 1000).join(` `),
-    categories: getRandomSubarray(categories),
+    announce: shuffle(sentences).slice(0, sentences.length).slice(0, VALIDATOR.POST.MAX).join(` `),
+    fullText: shuffle(sentences).slice(0, sentences.length).slice(0, VALIDATOR.POST.MAX_FULL_TEXT).join(` `),
+    categories: getRandomSubarray(categories, 5),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments, users),
     picture: getPictureFileName(),
   }))
