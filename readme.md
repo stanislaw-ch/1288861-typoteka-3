@@ -14,4 +14,4 @@ The repository was created for training in the Node.js Level 1 intensive online 
 The stack used for this project was:
 - Node.js
 - PostgreSQL
-- Github
+- Git
